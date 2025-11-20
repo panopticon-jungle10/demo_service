@@ -109,8 +109,6 @@ export class PostsService {
 
   async findOneAsAdmin(id: string, adminPassword: string) {
     const envAdminPassword = process.env.ADMIN_PASSWORD;
-    console.log(envAdminPassword);
-    console.log(adminPassword);
     if (!envAdminPassword || adminPassword !== envAdminPassword) {
       throw new UnauthorizedException('관리자 권한이 필요합니다.');
     }
