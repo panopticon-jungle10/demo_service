@@ -84,6 +84,11 @@ async def chat(request: ChatRequest):
     3. Return complete response
     """
 
+    logger.info(f"Received chat request: conversationId={request.conversationId}, wantsToPost={request.wantsToPost}")
+    logger.info(f"Full request data: {request.model_dump()}")
+    if request.postData:
+        logger.info(f"PostData: {request.postData.model_dump()}")
+
     # Step 1: Generate AI answer
     try:
         ai_answer = await bedrock_service.generate_answer(request.originalQuestion)
@@ -143,7 +148,7 @@ async def chat(request: ChatRequest):
 
     # Update reply message
     if post_result:
-        reply_message = f"{ai_answer}\n\n글이 생성되었습니다. 글 번호: {post_result['id']}"
+        reply_message = f"{ai_answer}\n\n글이 생성되었습니다. 글 번호: {post_result['postId']}"
         if comment_success:
             reply_message += "\nAI 답변이 댓글로 등록되었습니다."
         response_data["reply"] = reply_message

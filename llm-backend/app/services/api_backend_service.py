@@ -48,9 +48,10 @@ class APIBackendService:
 
                 if response.status_code in [200, 201]:
                     data = response.json()
-                    # API returns { postId, message }
+                    # API returns { id (UUID), postId (number), message }
                     return {
-                        "id": data.get("postId"),
+                        "id": data.get("id"),  # UUID for comment creation
+                        "postId": data.get("postId"),  # Display number for user
                         "message": data.get("message", "글이 작성되었습니다")
                     }
                 else:

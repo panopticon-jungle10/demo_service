@@ -30,11 +30,12 @@ export class PostsService {
       password: hashedPassword,
     });
 
-    this.postsRepository.save(post);
-    const postCount = (await this.getAllCount()) + 1;
+    const savedPost = await this.postsRepository.save(post);
+
     return {
-      postId: postCount,
-      message: `생성번호는 답변확인과 수정시 필요합니다. 생성번호: ${postCount}`,
+      id: savedPost.id,
+      postId: savedPost.postId,
+      message: `생성번호는 답변확인과 수정시 필요합니다. 생성번호: ${savedPost.postId}`,
     };
   }
 

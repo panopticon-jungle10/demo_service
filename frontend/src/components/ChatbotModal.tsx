@@ -9,16 +9,7 @@ interface ChatbotModalProps {
   onClose: () => void;
 }
 
-type Step =
-  | "question"
-  | "ai_answer"
-  | "want_post"
-  | "title"
-  | "password"
-  | "toggles"
-  | "name"
-  | "email"
-  | "completed";
+type Step = "question" | "ai_answer" | "post_form";
 
 export default function ChatbotModal({ onClose }: ChatbotModalProps) {
   const [conversationId] = useState(uuidv4());
@@ -47,20 +38,12 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
       setAiAnswer(response.aiAnswer);
       setStep("ai_answer");
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Chat error:", error);
       setAiAnswer("챗봇: 오류입니다. AI 서비스가 현재 이용 불가능합니다.");
       setStep("ai_answer");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleWantPost = (wants: boolean) => {
-    setWantsToPost(wants);
-    if (wants) {
-      setStep("title");
-    } else {
-      onClose();
     }
   };
 
@@ -89,7 +72,8 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
       alert(response.reply);
       onClose();
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Submit error:", error);
       alert("글 작성 중 오류가 발생했습니다");
     } finally {
       setLoading(false);
@@ -133,150 +117,114 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
         {step === "ai_answer" && (
           <div>
-            <div className="bg-gray-100 p-4 rounded-lg mb-4">
+            <div className="bg-gray-100 p-4 rounded-lg mb-6">
               <p className="whitespace-pre-wrap text-black">{aiAnswer}</p>
             </div>
-            <p className="mb-4 font-semibold text-black">
-              글쓰기를 통해 작성 부탁드립니다.
-            </p>
-          </div>
-        )}
 
-        {step === "title" && (
-          <div>
-            <label className="block mb-2 font-semibold text-black">
-              글 제목을 입력하세요
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg mb-4 text-black"
-              placeholder="제목"
-            />
-            <button
-              onClick={() => setStep("password")}
-              disabled={!title.trim()}
-              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
-            >
-              다음
-            </button>
-          </div>
-        )}
+            <h3 className="text-lg font-semibold mb-4 text-black">글로 작성하시겠습니까?</h3>
 
-        {step === "password" && (
-          <div>
-            <label className="block mb-2 font-semibold text-black">
-              비밀번호를 입력하세요
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg mb-4 text-black"
-              placeholder="비밀번호"
-            />
-            <button
-              onClick={() => setStep("toggles")}
-              disabled={!password.trim()}
-              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
-            >
-              다음
-            </button>
-          </div>
-        )}
-
-        {step === "toggles" && (
-          <div>
-            <label className="block mb-4 font-semibold text-black">
-              익명/비공개 여부 선택
-            </label>
-            <div className="space-y-4 mb-4">
-              <label className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={isAnonymous}
-                  onChange={(e) => setIsAnonymous(e.target.checked)}
-                  className="w-5 h-5"
-                />
-                <span className="text-black">익명으로 작성</span>
-              </label>
-              <label className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={isPrivate}
-                  onChange={(e) => setIsPrivate(e.target.checked)}
-                  className="w-5 h-5"
-                />
-                <span className="text-black">비공개로 작성</span>
-              </label>
-            </div>
-            <button
-              onClick={() => setStep("name")}
-              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
-            >
-              다음
-            </button>
-          </div>
-        )}
-
-        {step === "name" && (
-          <div>
-            <label className="block mb-2 font-semibold text-black">
-              이름을 입력하세요{" "}
-              {isAnonymous && (
-                <span className="text-xs text-gray-500">
-                  (익명으로 표시됩니다)
-                </span>
-              )}
-            </label>
-            <input
-              type="text"
-              value={authorName}
-              onChange={(e) => setAuthorName(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg mb-4 text-black"
-              placeholder="이름"
-            />
-            <button
-              onClick={() => setStep("email")}
-              disabled={!authorName.trim()}
-              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
-            >
-              다음
-            </button>
-          </div>
-        )}
-
-        {step === "email" && (
-          <div>
-            <label className="block mb-2 font-semibold text-black">
-              이메일 입력 (선택)
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg mb-4 text-black"
-              placeholder="email@example.com"
-            />
             <div className="flex gap-4">
               <button
-                onClick={handleFinalSubmit}
-                disabled={loading}
-                className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+                onClick={() => setStep("post_form")}
+                className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-semibold"
               >
-                {loading ? "제출 중..." : "제출"}
+                네
               </button>
               <button
-                onClick={handleFinalSubmit}
-                disabled={loading}
-                className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
+                onClick={onClose}
+                className="flex-1 bg-gray-400 text-white py-3 rounded-lg hover:bg-gray-500 font-semibold"
               >
-                건너뛰기
+                아니요
               </button>
             </div>
           </div>
         )}
+
+        {step === "post_form" && (
+          <div>
+            <div className="bg-gray-100 p-4 rounded-lg mb-6">
+              <p className="whitespace-pre-wrap text-black">{aiAnswer}</p>
+            </div>
+
+            <h3 className="text-lg font-semibold mb-4 text-black">글로 작성하기</h3>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block mb-2 font-semibold text-black">제목 *</label>
+                <input
+                  type="text"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="w-full px-4 py-2 border rounded-lg text-black"
+                  placeholder="제목을 입력하세요"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 font-semibold text-black">비밀번호 *</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-2 border rounded-lg text-black"
+                  placeholder="글 수정시 필요한 비밀번호"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 font-semibold text-black">이름 *</label>
+                <input
+                  type="text"
+                  value={authorName}
+                  onChange={(e) => setAuthorName(e.target.value)}
+                  className="w-full px-4 py-2 border rounded-lg text-black"
+                  placeholder="이름"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-2 font-semibold text-black">이메일 (선택)</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-2 border rounded-lg text-black"
+                  placeholder="email@example.com"
+                />
+              </div>
+
+              <div className="flex gap-4">
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={isAnonymous}
+                    onChange={(e) => setIsAnonymous(e.target.checked)}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm text-black">익명으로 작성</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={isPrivate}
+                    onChange={(e) => setIsPrivate(e.target.checked)}
+                    className="w-4 h-4"
+                  />
+                  <span className="text-sm text-black">비공개로 작성</span>
+                </label>
+              </div>
+
+              <button
+                onClick={handleFinalSubmit}
+                disabled={loading || !title.trim() || !password.trim() || !authorName.trim()}
+                className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 font-semibold"
+              >
+                {loading ? "제출 중..." : "글 작성하기"}
+              </button>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

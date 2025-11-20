@@ -1,12 +1,17 @@
 import os
 import logging
-from fastapi import FastAPI
+from pathlib import Path
+from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from app.routers import chat
 
-# Load environment variables
+# Load environment variables from project root
+
 load_dotenv()
+
 
 # Configure logging
 logging.basicConfig(
@@ -14,11 +19,25 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
+logger = logging.getLogger(__name__)
+
 app = FastAPI(
     title="LLM Backend",
     description="AWS Bedrock Claude 3 Sonnet Q&A API with Auto-posting",
     version="1.0.0",
 )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Log validation errors for debugging"""
+    body = await request.body()
+    logger.error(f"Validation error for request: {body.decode()}")
+    logger.error(f"Validation errors: {exc.errors()}")
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={"detail": exc.errors()},
+    )
 
 # CORS
 app.add_middleware(
