@@ -5,7 +5,6 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   Query,
   HttpCode,
   HttpStatus,
@@ -14,7 +13,6 @@ import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { VerifyPasswordDto } from './dto/verify-password.dto';
-import { DeletePostDto } from './dto/delete-post.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -38,24 +36,24 @@ export class PostsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @Query('password') password?: string) {
-    return this.postsService.findOne(id, password);
+  findOne(@Param('id') id: string) {
+    return this.postsService.findOne(id);
   }
 
-  @Post(':id/verify')
+  @Post(':id/access')
   @HttpCode(HttpStatus.OK)
-  verifyPassword(@Param('id') id: string, @Body() verifyPasswordDto: VerifyPasswordDto) {
-    return this.postsService.verifyPassword(id, verifyPasswordDto.password);
+  accessPrivatePost(@Param('id') id: string, @Body() verifyPasswordDto: VerifyPasswordDto) {
+    return this.postsService.findOne(id, verifyPasswordDto.password);
   }
+
+  // @Post(':id/verify')
+  // @HttpCode(HttpStatus.OK)
+  // verifyPassword(@Param('id') id: string, @Body() verifyPasswordDto: VerifyPasswordDto) {
+  //   return this.postsService.verifyPassword(id, verifyPasswordDto.password);
+  // }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
     return this.postsService.update(id, updatePostDto);
-  }
-
-  @Delete(':id')
-  @HttpCode(HttpStatus.OK)
-  remove(@Param('id') id: string, @Body() deletePostDto: DeletePostDto) {
-    return this.postsService.remove(id, deletePostDto.password);
   }
 }

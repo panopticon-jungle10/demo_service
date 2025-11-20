@@ -20,7 +20,7 @@ export default function PostDetailPage() {
       setPost(data);
       setNeedsPassword(false);
     } catch (error: any) {
-      if (error.message.includes('401') || error.message.includes('비밀번호')) {
+      if (error.status === 401) {
         setNeedsPassword(true);
       } else {
         alert('글을 불러올 수 없습니다');
@@ -40,17 +40,8 @@ export default function PostDetailPage() {
     fetchPost(password);
   };
 
-  const handleDelete = async () => {
-    const pwd = prompt('비밀번호를 입력하세요');
-    if (!pwd) return;
-
-    try {
-      await api.deletePost(params.id as string, pwd);
-      alert('글이 삭제되었습니다');
-      router.push('/');
-    } catch {
-      alert('삭제 실패: 비밀번호를 확인하세요');
-    }
+  const handleEdit = () => {
+    router.push(`/posts/${params.id}/edit`);
   };
 
   if (loading) {
@@ -130,10 +121,10 @@ export default function PostDetailPage() {
             목록
           </button>
           <button
-            onClick={handleDelete}
+            onClick={handleEdit}
             className="px-6 py-2 bg-black text-white rounded text-sm font-semibold hover:bg-gray-800"
           >
-            삭제
+            수정
           </button>
         </div>
       </div>

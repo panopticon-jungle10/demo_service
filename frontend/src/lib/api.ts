@@ -9,12 +9,27 @@ export const api = {
   },
 
   async getPost(id: string, password?: string) {
-    const url = password
-      ? `${API_URL}/posts/${id}?password=${encodeURIComponent(password)}`
-      : `${API_URL}/posts/${id}`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error('Failed to fetch post');
-    return res.json();
+    if (password) {
+      const res = await fetch(`${API_URL}/posts/${id}/access`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+      if (!res.ok) {
+        const error = new Error('Failed to fetch post');
+        (error as any).status = res.status;
+        throw error;
+      }
+      return res.json();
+    } else {
+      const res = await fetch(`${API_URL}/posts/${id}`);
+      if (!res.ok) {
+        const error = new Error('Failed to fetch post');
+        (error as any).status = res.status;
+        throw error;
+      }
+      return res.json();
+    }
   },
 
   async createPost(data: any) {
@@ -33,17 +48,11 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    if (!res.ok) throw new Error('Failed to update post');
-    return res.json();
-  },
-
-  async deletePost(id: string, password: string) {
-    const res = await fetch(`${API_URL}/posts/${id}`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ password }),
-    });
-    if (!res.ok) throw new Error('Failed to delete post');
+    if (!res.ok) {
+      const error = new Error('Failed to update post');
+      (error as any).status = res.status;
+      throw error;
+    }
     return res.json();
   },
 

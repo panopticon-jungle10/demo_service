@@ -56,6 +56,11 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
   };
 
   const handleFinalSubmit = async () => {
+    if (!authorName.trim()) {
+      alert('이름은 필수입니다');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -66,9 +71,9 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
         postData: {
           title,
           password,
+          authorName,
           isAnonymous,
           isPrivate,
-          authorName: isAnonymous ? undefined : authorName,
           email: email || undefined,
         },
       });
@@ -199,13 +204,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
               </label>
             </div>
             <button
-              onClick={() => {
-                if (isAnonymous) {
-                  setStep('email');
-                } else {
-                  setStep('name');
-                }
-              }}
+              onClick={() => setStep('name')}
               className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
             >
               다음
@@ -215,7 +214,9 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
         {step === 'name' && (
           <div>
-            <label className="block mb-2 font-semibold text-black">이름을 입력하세요</label>
+            <label className="block mb-2 font-semibold text-black">
+              이름을 입력하세요 {isAnonymous && <span className="text-xs text-gray-500">(익명으로 표시됩니다)</span>}
+            </label>
             <input
               type="text"
               value={authorName}
