@@ -3,87 +3,77 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: demo-service-postgres
+    container_name: demo-postgres
     environment:
+      POSTGRES_DB: demo_service
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: demo_service
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - demo-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  llm-backend:
-    build:
-      context: ./llm-backend
-      dockerfile: Dockerfile
-    container_name: demo-service-llm
-    env_file:
-      - ./llm-backend/.env
-    ports:
-      - "8001:8001"
-    networks:
-      - demo-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8001/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
   api-backend:
     build:
       context: ./api-backend
       dockerfile: Dockerfile
-    container_name: demo-service-api
+    container_name: demo-api
+    ports:
+      - "3001:3001"
     environment:
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
       DATABASE_USER: postgres
       DATABASE_PASSWORD: postgres
       DATABASE_NAME: demo_service
-      LLM_BACKEND_URL: http://llm-backend:8001
+      ADMIN_PASSWORD: admin123
       PORT: 3001
-    ports:
-      - "3001:3001"
+      NODE_ENV: development
     depends_on:
       postgres:
         condition: service_healthy
-      llm-backend:
-        condition: service_healthy
-    networks:
-      - demo-network
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    volumes:
+      - ./api-backend:/app
+      - /app/node_modules
+    command: npm run start:dev
+
+  llm-backend:
+    build:
+      context: ./llm-backend
+      dockerfile: Dockerfile
+    container_name: demo-llm
+    ports:
+      - "5000:5000"
+    environment:
+      API_BACKEND_URL: http://api-backend:3001
+      ADMIN_PASSWORD: admin123
+      PORT: 5000
+    volumes:
+      - ./llm-backend:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 5000 --reload
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: demo-service-frontend
-    environment:
-      API_URL: http://api-backend:3001
-      NEXT_PUBLIC_API_URL: http://localhost:3001
+    container_name: demo-frontend
     ports:
       - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+      NEXT_PUBLIC_LLM_URL: http://localhost:5000
     depends_on:
-      api-backend:
-        condition: service_healthy
-    networks:
-      - demo-network
-
-networks:
-  demo-network:
-    driver: bridge
+      - api-backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
 
 volumes:
   postgres_data:

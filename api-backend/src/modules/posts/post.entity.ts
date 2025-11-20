@@ -5,7 +5,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Generated,
+  OneToMany,
 } from 'typeorm';
+import { Comment } from '../comments/comment.entity';
 
 @Entity('posts')
 export class Post {
@@ -36,6 +38,9 @@ export class Post {
 
   @Column({ type: 'boolean', default: true })
   isAnonymous: boolean;
+
+  @OneToMany(() => Comment, (comment) => comment.post, { eager: true, cascade: true })
+  comments: Comment[];
 
   @CreateDateColumn()
   createdAt: Date;

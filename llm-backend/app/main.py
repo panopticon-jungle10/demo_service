@@ -1,14 +1,26 @@
+import os
+import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import bedrock
-import os
+from dotenv import load_dotenv
+from app.routers import chat
+
+# Load environment variables
+load_dotenv()
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 app = FastAPI(
     title="LLM Backend",
-    description="AWS Bedrock Claude 3 Sonnet API",
-    version="0.1.0",
+    description="AWS Bedrock Claude 3 Sonnet Q&A API with Auto-posting",
+    version="1.0.0",
 )
 
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,7 +29,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(bedrock.router)
+# Include routers
+app.include_router(chat.router, tags=["chat"])
 
 
 @app.get("/")
@@ -31,5 +44,5 @@ async def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv("PORT", 8001))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    port = int(os.getenv("PORT", 5000))
+    uvicorn.run("app.main:app", host="0.0.0.0", port=port, reload=True)

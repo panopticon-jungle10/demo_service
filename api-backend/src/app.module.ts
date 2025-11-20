@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { PostsModule } from './modules/posts/posts.module';
+import { CommentsModule } from './modules/comments/comments.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { PostsModule } from './modules/posts/posts.module';
       logging: true,
     }),
     PostsModule,
+    CommentsModule,
   ],
   controllers: [AppController],
 })
