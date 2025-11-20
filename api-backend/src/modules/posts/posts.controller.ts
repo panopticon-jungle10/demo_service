@@ -46,11 +46,11 @@ export class PostsController {
     return this.postsService.findOne(id, verifyPasswordDto.password);
   }
 
-  // @Post(':id/verify')
-  // @HttpCode(HttpStatus.OK)
-  // verifyPassword(@Param('id') id: string, @Body() verifyPasswordDto: VerifyPasswordDto) {
-  //   return this.postsService.verifyPassword(id, verifyPasswordDto.password);
-  // }
+  @Post(':id/admin-access')
+  @HttpCode(HttpStatus.OK)
+  adminAccessPost(@Param('id') id: string, @Body() body: { adminPassword: string }) {
+    return this.postsService.findOneAsAdmin(id, body.adminPassword);
+  }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {

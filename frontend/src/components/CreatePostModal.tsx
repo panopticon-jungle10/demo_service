@@ -106,7 +106,7 @@ export default function CreatePostModal({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded text-sm text-black"
-              placeholder="비밀번호 (수정/삭제시 필요)"
+              placeholder="비밀번호 (조회, 수정시 필요)"
             />
           </div>
 
@@ -145,13 +145,13 @@ export default function CreatePostModal({
               value={authorName}
               onChange={(e) => setAuthorName(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded text-sm text-black"
-              placeholder="이름"
+              placeholder="이름 또는 별칭"
             />
           </div>
 
           <div>
             <label className="block text-sm font-semibold mb-2 text-black">
-              이메일 (선택)
+              상세 답변 수신 이메일 (선택)
             </label>
             <input
               type="email"

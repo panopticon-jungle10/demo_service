@@ -107,6 +107,24 @@ export class PostsService {
     return result;
   }
 
+  async findOneAsAdmin(id: string, adminPassword: string) {
+    const envAdminPassword = process.env.ADMIN_PASSWORD;
+    console.log(envAdminPassword);
+    console.log(adminPassword);
+    if (!envAdminPassword || adminPassword !== envAdminPassword) {
+      throw new UnauthorizedException('관리자 권한이 필요합니다.');
+    }
+
+    const post = await this.postsRepository.findOne({ where: { id } });
+
+    if (!post) {
+      throw new NotFoundException('글을 찾을 수 없습니다.');
+    }
+
+    const { password: _, ...result } = post;
+    return result;
+  }
+
   async findByPostId(postId: number, password?: string) {
     const post = await this.postsRepository.findOne({ where: { postId } });
 
