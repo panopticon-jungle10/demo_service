@@ -1,28 +1,37 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { api } from '@/lib/api';
-import { X } from 'lucide-react';
+import { useState } from "react";
+import { v4 as uuidv4 } from "uuid";
+import { api } from "@/lib/api";
+import { X } from "lucide-react";
 
 interface ChatbotModalProps {
   onClose: () => void;
 }
 
-type Step = 'question' | 'ai_answer' | 'want_post' | 'title' | 'password' | 'toggles' | 'name' | 'email' | 'completed';
+type Step =
+  | "question"
+  | "ai_answer"
+  | "want_post"
+  | "title"
+  | "password"
+  | "toggles"
+  | "name"
+  | "email"
+  | "completed";
 
 export default function ChatbotModal({ onClose }: ChatbotModalProps) {
   const [conversationId] = useState(uuidv4());
-  const [step, setStep] = useState<Step>('question');
-  const [question, setQuestion] = useState('');
-  const [aiAnswer, setAiAnswer] = useState('');
+  const [step, setStep] = useState<Step>("question");
+  const [question, setQuestion] = useState("");
+  const [aiAnswer, setAiAnswer] = useState("");
   const [wantsToPost, setWantsToPost] = useState(false);
-  const [title, setTitle] = useState('');
-  const [password, setPassword] = useState('');
+  const [title, setTitle] = useState("");
+  const [password, setPassword] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(true);
   const [isPrivate, setIsPrivate] = useState(true);
-  const [authorName, setAuthorName] = useState('');
-  const [email, setEmail] = useState('');
+  const [authorName, setAuthorName] = useState("");
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmitQuestion = async () => {
@@ -37,10 +46,10 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
       });
 
       setAiAnswer(response.aiAnswer);
-      setStep('ai_answer');
+      setStep("ai_answer");
     } catch (error) {
-      setAiAnswer('챗봇: 오류입니다. AI 서비스가 현재 이용 불가능합니다.');
-      setStep('ai_answer');
+      setAiAnswer("챗봇: 오류입니다. AI 서비스가 현재 이용 불가능합니다.");
+      setStep("ai_answer");
     } finally {
       setLoading(false);
     }
@@ -49,7 +58,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
   const handleWantPost = (wants: boolean) => {
     setWantsToPost(wants);
     if (wants) {
-      setStep('title');
+      setStep("title");
     } else {
       onClose();
     }
@@ -57,7 +66,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
   const handleFinalSubmit = async () => {
     if (!authorName.trim()) {
-      alert('이름은 필수입니다');
+      alert("이름은 필수입니다");
       return;
     }
 
@@ -81,7 +90,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
       alert(response.reply);
       onClose();
     } catch (error) {
-      alert('글 작성 중 오류가 발생했습니다');
+      alert("글 작성 중 오류가 발생했습니다");
     } finally {
       setLoading(false);
     }
@@ -92,14 +101,19 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
       <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-black">AI 챗봇</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700"
+          >
             <X className="w-6 h-6" />
           </button>
         </div>
 
-        {step === 'question' && (
+        {step === "question" && (
           <div>
-            <label className="block mb-2 font-semibold text-black">질문을 입력하세요</label>
+            <label className="block mb-2 font-semibold text-black">
+              질문을 입력하세요
+            </label>
             <textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
@@ -112,37 +126,27 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
               disabled={loading}
               className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
             >
-              {loading ? '처리 중...' : '질문하기'}
+              {loading ? "처리 중..." : "질문하기"}
             </button>
           </div>
         )}
 
-        {step === 'ai_answer' && (
+        {step === "ai_answer" && (
           <div>
             <div className="bg-gray-100 p-4 rounded-lg mb-4">
               <p className="whitespace-pre-wrap text-black">{aiAnswer}</p>
             </div>
-            <p className="mb-4 font-semibold text-black">글로 작성하시겠습니까?</p>
-            <div className="flex gap-4">
-              <button
-                onClick={() => handleWantPost(true)}
-                className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
-              >
-                네
-              </button>
-              <button
-                onClick={() => handleWantPost(false)}
-                className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400"
-              >
-                아니오
-              </button>
-            </div>
+            <p className="mb-4 font-semibold text-black">
+              글쓰기를 통해 작성 부탁드립니다.
+            </p>
           </div>
         )}
 
-        {step === 'title' && (
+        {step === "title" && (
           <div>
-            <label className="block mb-2 font-semibold text-black">글 제목을 입력하세요</label>
+            <label className="block mb-2 font-semibold text-black">
+              글 제목을 입력하세요
+            </label>
             <input
               type="text"
               value={title}
@@ -151,7 +155,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
               placeholder="제목"
             />
             <button
-              onClick={() => setStep('password')}
+              onClick={() => setStep("password")}
               disabled={!title.trim()}
               className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
             >
@@ -160,9 +164,11 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
           </div>
         )}
 
-        {step === 'password' && (
+        {step === "password" && (
           <div>
-            <label className="block mb-2 font-semibold text-black">비밀번호를 입력하세요</label>
+            <label className="block mb-2 font-semibold text-black">
+              비밀번호를 입력하세요
+            </label>
             <input
               type="password"
               value={password}
@@ -171,7 +177,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
               placeholder="비밀번호"
             />
             <button
-              onClick={() => setStep('toggles')}
+              onClick={() => setStep("toggles")}
               disabled={!password.trim()}
               className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
             >
@@ -180,9 +186,11 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
           </div>
         )}
 
-        {step === 'toggles' && (
+        {step === "toggles" && (
           <div>
-            <label className="block mb-4 font-semibold text-black">익명/비공개 여부 선택</label>
+            <label className="block mb-4 font-semibold text-black">
+              익명/비공개 여부 선택
+            </label>
             <div className="space-y-4 mb-4">
               <label className="flex items-center gap-3">
                 <input
@@ -204,7 +212,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
               </label>
             </div>
             <button
-              onClick={() => setStep('name')}
+              onClick={() => setStep("name")}
               className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
             >
               다음
@@ -212,10 +220,15 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
           </div>
         )}
 
-        {step === 'name' && (
+        {step === "name" && (
           <div>
             <label className="block mb-2 font-semibold text-black">
-              이름을 입력하세요 {isAnonymous && <span className="text-xs text-gray-500">(익명으로 표시됩니다)</span>}
+              이름을 입력하세요{" "}
+              {isAnonymous && (
+                <span className="text-xs text-gray-500">
+                  (익명으로 표시됩니다)
+                </span>
+              )}
             </label>
             <input
               type="text"
@@ -225,7 +238,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
               placeholder="이름"
             />
             <button
-              onClick={() => setStep('email')}
+              onClick={() => setStep("email")}
               disabled={!authorName.trim()}
               className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
             >
@@ -234,9 +247,11 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
           </div>
         )}
 
-        {step === 'email' && (
+        {step === "email" && (
           <div>
-            <label className="block mb-2 font-semibold text-black">이메일 입력 (선택)</label>
+            <label className="block mb-2 font-semibold text-black">
+              이메일 입력 (선택)
+            </label>
             <input
               type="email"
               value={email}
@@ -250,7 +265,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
                 disabled={loading}
                 className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
               >
-                {loading ? '제출 중...' : '제출'}
+                {loading ? "제출 중..." : "제출"}
               </button>
               <button
                 onClick={handleFinalSubmit}
