@@ -18,15 +18,15 @@ export default function RootLayout({
           <div className="container mx-auto px-4">
             <nav className="flex items-center justify-between h-16">
               <div className="flex items-center space-x-8">
-                <h1 className="text-2xl font-bold">LogQ</h1>
+                <h1 className="text-2xl font-bold text-black">LogQ</h1>
                 <div className="hidden md:flex space-x-6 text-sm">
-                  <a href="/" className="hover:text-gray-600">HOME</a>
-                  <a href="/" className="hover:text-gray-600">COMMUNITY</a>
-                  <a href="/" className="hover:text-gray-600">ABOUT</a>
+                  <a href="/" className="text-black hover:text-gray-600">HOME</a>
+                  <a href="/" className="text-black hover:text-gray-600">COMMUNITY</a>
+                  <a href="/" className="text-black hover:text-gray-600">ABOUT</a>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <a href="/admin" className="text-sm hover:text-gray-600">ADMIN</a>
+                <a href="/admin" className="text-sm text-black hover:text-gray-600">ADMIN</a>
               </div>
             </nav>
           </div>

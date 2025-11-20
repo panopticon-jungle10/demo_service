@@ -35,7 +35,7 @@ export default function CommentList({ comments, isAdmin, onEdit, onDelete }: Com
             className={`p-4 rounded border ${bgColor} ${borderColor}`}
           >
             <div className="flex items-center gap-2 mb-3">
-              <Icon className="w-5 h-5 text-gray-600" />
+              <Icon className="w-5 h-5 text-black" />
               <span className={`text-xs font-semibold px-2 py-1 rounded ${badgeColor}`}>
                 {label}
               </span>
@@ -43,7 +43,7 @@ export default function CommentList({ comments, isAdmin, onEdit, onDelete }: Com
                 {new Date(comment.createdAt).toLocaleString('ko-KR')}
               </span>
             </div>
-            <p className="text-sm text-gray-800 whitespace-pre-wrap leading-relaxed">
+            <p className="text-sm text-black whitespace-pre-wrap leading-relaxed">
               {comment.content}
             </p>
 

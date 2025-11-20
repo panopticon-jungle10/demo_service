@@ -37,15 +37,15 @@ export default function Home() {
       <div className="max-w-5xl mx-auto">
         {/* Page Title */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2">Q&A</h1>
+          <h1 className="text-4xl font-bold mb-2 text-black">Q&A</h1>
           <div className="w-12 h-1 bg-black mx-auto"></div>
         </div>
 
         {/* Category Tabs */}
         <div className="flex justify-center space-x-6 text-sm mb-8 border-b border-gray-200">
-          <button className="pb-3 border-b-2 border-black font-semibold">Q&A</button>
-          <button className="pb-3 text-gray-500 hover:text-black">NOTICE</button>
-          <button className="pb-3 text-gray-500 hover:text-black">FAQ</button>
+          <button className="pb-3 border-b-2 border-black font-semibold text-black">Q&A</button>
+          <button className="pb-3 text-black hover:text-gray-600">NOTICE</button>
+          <button className="pb-3 text-black hover:text-gray-600">FAQ</button>
         </div>
 
         {/* Table */}
@@ -53,10 +53,10 @@ export default function Home() {
           <table className="w-full">
             <thead>
               <tr className="border-t-2 border-black border-b">
-                <th className="py-4 px-4 text-left text-sm font-semibold w-16">No</th>
-                <th className="py-4 px-4 text-left text-sm font-semibold">제목</th>
-                <th className="py-4 px-4 text-center text-sm font-semibold w-32">글쓴이</th>
-                <th className="py-4 px-4 text-center text-sm font-semibold w-32">작성시간</th>
+                <th className="py-4 px-4 text-left text-sm font-semibold w-16 text-black">No</th>
+                <th className="py-4 px-4 text-left text-sm font-semibold text-black">제목</th>
+                <th className="py-4 px-4 text-center text-sm font-semibold w-32 text-black">글쓴이</th>
+                <th className="py-4 px-4 text-center text-sm font-semibold w-32 text-black">작성시간</th>
               </tr>
             </thead>
             <tbody>
@@ -79,17 +79,17 @@ export default function Home() {
                     className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer"
                     onClick={() => router.push(`/posts/${post.id}`)}
                   >
-                    <td className="py-4 px-4 text-sm text-gray-600">{posts.length - index}</td>
+                    <td className="py-4 px-4 text-sm text-black">{posts.length - index}</td>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
                         {post.isPrivate && <Lock className="w-4 h-4 text-gray-400" />}
-                        <span className="text-sm">{post.title}</span>
+                        <span className="text-sm text-black">{post.title}</span>
                       </div>
                     </td>
-                    <td className="py-4 px-4 text-center text-sm text-gray-500">
+                    <td className="py-4 px-4 text-center text-sm text-black">
                       {post.authorName || 'PLIPOP'}
                     </td>
-                    <td className="py-4 px-4 text-center text-sm text-gray-400">
+                    <td className="py-4 px-4 text-center text-sm text-black">
                       {new Date(post.createdAt).toLocaleDateString('ko-KR')}
                     </td>
                   </tr>
@@ -107,9 +107,9 @@ export default function Home() {
               placeholder="Search"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 outline-none text-sm"
+              className="flex-1 outline-none text-sm text-black placeholder:text-gray-400"
             />
-            <Search className="w-4 h-4 text-gray-400" />
+            <Search className="w-4 h-4 text-black" />
           </div>
           <button
             onClick={() => setShowCreatePost(true)}

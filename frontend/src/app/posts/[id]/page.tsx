@@ -95,8 +95,8 @@ export default function PostDetailPage() {
         <div className="bg-white border border-gray-200 rounded">
           {/* Header */}
           <div className="border-b border-gray-200 p-6">
-            <h1 className="text-2xl font-bold mb-4">{post.title}</h1>
-            <div className="flex items-center justify-between text-sm text-gray-500">
+            <h1 className="text-2xl font-bold mb-4 text-black">{post.title}</h1>
+            <div className="flex items-center justify-between text-sm text-black">
               <div className="flex items-center gap-4">
                 <span>작성자: {post.isAnonymous ? '익명' : post.authorName}</span>
                 <span>{new Date(post.createdAt).toLocaleString('ko-KR')}</span>
@@ -106,9 +106,9 @@ export default function PostDetailPage() {
 
           {/* Content */}
           <div className="p-6 min-h-[300px]">
-            <p className="text-gray-800 whitespace-pre-wrap leading-relaxed">{post.content}</p>
+            <p className="text-black whitespace-pre-wrap leading-relaxed">{post.content}</p>
             {post.email && (
-              <p className="text-sm text-gray-600 mt-4">이메일: {post.email}</p>
+              <p className="text-sm text-black mt-4">이메일: {post.email}</p>
             )}
           </div>
 

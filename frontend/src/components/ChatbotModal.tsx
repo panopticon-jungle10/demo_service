@@ -86,7 +86,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold">AI 챗봇</h2>
+          <h2 className="text-2xl font-bold text-black">AI 챗봇</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             <X className="w-6 h-6" />
           </button>
@@ -94,11 +94,11 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
         {step === 'question' && (
           <div>
-            <label className="block mb-2 font-semibold">질문을 입력하세요</label>
+            <label className="block mb-2 font-semibold text-black">질문을 입력하세요</label>
             <textarea
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg mb-4"
+              className="w-full px-4 py-2 border rounded-lg mb-4 text-black"
               rows={4}
               placeholder="로그 수집에 대해 궁금한 점을 질문해주세요"
             />
@@ -115,9 +115,9 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
         {step === 'ai_answer' && (
           <div>
             <div className="bg-gray-100 p-4 rounded-lg mb-4">
-              <p className="whitespace-pre-wrap">{aiAnswer}</p>
+              <p className="whitespace-pre-wrap text-black">{aiAnswer}</p>
             </div>
-            <p className="mb-4 font-semibold">글로 작성하시겠습니까?</p>
+            <p className="mb-4 font-semibold text-black">글로 작성하시겠습니까?</p>
             <div className="flex gap-4">
               <button
                 onClick={() => handleWantPost(true)}
@@ -137,12 +137,12 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
         {step === 'title' && (
           <div>
-            <label className="block mb-2 font-semibold">글 제목을 입력하세요</label>
+            <label className="block mb-2 font-semibold text-black">글 제목을 입력하세요</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg mb-4"
+              className="w-full px-4 py-2 border rounded-lg mb-4 text-black"
               placeholder="제목"
             />
             <button
@@ -157,12 +157,12 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
         {step === 'password' && (
           <div>
-            <label className="block mb-2 font-semibold">비밀번호를 입력하세요</label>
+            <label className="block mb-2 font-semibold text-black">비밀번호를 입력하세요</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg mb-4"
+              className="w-full px-4 py-2 border rounded-lg mb-4 text-black"
               placeholder="비밀번호"
             />
             <button
@@ -177,7 +177,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
         {step === 'toggles' && (
           <div>
-            <label className="block mb-4 font-semibold">익명/비공개 여부 선택</label>
+            <label className="block mb-4 font-semibold text-black">익명/비공개 여부 선택</label>
             <div className="space-y-4 mb-4">
               <label className="flex items-center gap-3">
                 <input
@@ -186,7 +186,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
                   onChange={(e) => setIsAnonymous(e.target.checked)}
                   className="w-5 h-5"
                 />
-                <span>익명으로 작성</span>
+                <span className="text-black">익명으로 작성</span>
               </label>
               <label className="flex items-center gap-3">
                 <input
@@ -195,7 +195,7 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
                   onChange={(e) => setIsPrivate(e.target.checked)}
                   className="w-5 h-5"
                 />
-                <span>비공개로 작성</span>
+                <span className="text-black">비공개로 작성</span>
               </label>
             </div>
             <button
@@ -215,12 +215,12 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
         {step === 'name' && (
           <div>
-            <label className="block mb-2 font-semibold">이름을 입력하세요</label>
+            <label className="block mb-2 font-semibold text-black">이름을 입력하세요</label>
             <input
               type="text"
               value={authorName}
               onChange={(e) => setAuthorName(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg mb-4"
+              className="w-full px-4 py-2 border rounded-lg mb-4 text-black"
               placeholder="이름"
             />
             <button
@@ -235,12 +235,12 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
         {step === 'email' && (
           <div>
-            <label className="block mb-2 font-semibold">이메일 입력 (선택)</label>
+            <label className="block mb-2 font-semibold text-black">이메일 입력 (선택)</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg mb-4"
+              className="w-full px-4 py-2 border rounded-lg mb-4 text-black"
               placeholder="email@example.com"
             />
             <div className="flex gap-4">
