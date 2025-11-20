@@ -2,8 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
-import { QuestionsModule } from './modules/questions/questions.module';
-import { AnswersModule } from './modules/answers/answers.module';
+import { PostsModule } from './modules/posts/posts.module';
 
 @Module({
   imports: [
@@ -18,11 +17,10 @@ import { AnswersModule } from './modules/answers/answers.module';
       password: process.env.DATABASE_PASSWORD || 'postgres',
       database: process.env.DATABASE_NAME || 'demo_service',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true, // 개발 환경에서만 사용
+      synchronize: true,
       logging: true,
     }),
-    QuestionsModule,
-    AnswersModule,
+    PostsModule,
   ],
   controllers: [AppController],
 })
