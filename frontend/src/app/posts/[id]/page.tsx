@@ -55,20 +55,20 @@ export default function PostDetailPage() {
   if (needsPassword) {
     return (
       <div className="container mx-auto px-4 py-12">
-        <div className="max-w-md mx-auto bg-white border border-gray-200 p-8 rounded">
-          <h2 className="text-xl font-bold mb-4 text-center">비공개 글</h2>
-          <p className="text-gray-600 mb-6 text-center text-sm">비밀번호를 입력하세요</p>
+        <div className="max-w-md mx-auto bg-white border border-gray-200 p-8 rounded-xl shadow-lg">
+          <h2 className="text-2xl font-bold mb-4 text-center text-gray-900">비공개 글</h2>
+          <p className="text-gray-600 mb-6 text-center">비밀번호를 입력하세요</p>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()}
-            className="w-full px-4 py-2 border border-gray-300 rounded mb-4 text-sm"
+            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             placeholder="비밀번호"
           />
           <button
             onClick={handlePasswordSubmit}
-            className="w-full bg-black text-white py-2 rounded text-sm font-semibold hover:bg-gray-800"
+            className="w-full bg-indigo-600 text-white py-3 rounded-lg text-sm font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-colors"
           >
             확인
           </button>
@@ -83,11 +83,11 @@ export default function PostDetailPage() {
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-4xl mx-auto">
         {/* Post Detail */}
-        <div className="bg-white border border-gray-200 rounded">
+        <div className="bg-white border border-gray-200 rounded-xl shadow-md">
           {/* Header */}
-          <div className="border-b border-gray-200 p-6">
-            <h1 className="text-2xl font-bold mb-4 text-black">{post.title}</h1>
-            <div className="flex items-center justify-between text-sm text-black">
+          <div className="border-b border-gray-200 p-8">
+            <h1 className="text-3xl font-bold mb-4 text-gray-900">{post.title}</h1>
+            <div className="flex items-center justify-between text-sm text-gray-600">
               <div className="flex items-center gap-4">
                 <span>작성자: {post.isAnonymous ? '익명' : post.authorName}</span>
                 <span>{new Date(post.createdAt).toLocaleString('ko-KR')}</span>
@@ -96,33 +96,33 @@ export default function PostDetailPage() {
           </div>
 
           {/* Content */}
-          <div className="p-6 min-h-[300px]">
-            <p className="text-black whitespace-pre-wrap leading-relaxed">{post.content}</p>
+          <div className="p-8 min-h-[300px]">
+            <p className="text-gray-900 whitespace-pre-wrap leading-relaxed text-base">{post.content}</p>
             {post.email && (
-              <p className="text-sm text-black mt-4">이메일: {post.email}</p>
+              <p className="text-sm text-gray-600 mt-6">이메일: {post.email}</p>
             )}
           </div>
 
           {/* Comments */}
           {post.comments && post.comments.length > 0 && (
-            <div className="border-t border-gray-200 p-6 bg-gray-50">
-              <h3 className="text-lg font-bold mb-4">답변 ({post.comments.length})</h3>
+            <div className="border-t border-gray-200 p-8 bg-gray-50">
+              <h3 className="text-xl font-bold mb-6 text-gray-900">답변 ({post.comments.length})</h3>
               <CommentList comments={post.comments} />
             </div>
           )}
         </div>
 
         {/* Action Buttons */}
-        <div className="mt-6 flex justify-center gap-3">
+        <div className="mt-8 flex justify-center gap-3">
           <button
             onClick={() => router.push('/')}
-            className="px-6 py-2 bg-gray-200 text-gray-700 rounded text-sm font-semibold hover:bg-gray-300"
+            className="px-8 py-3 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200 transition-colors"
           >
             목록
           </button>
           <button
             onClick={handleEdit}
-            className="px-6 py-2 bg-black text-white rounded text-sm font-semibold hover:bg-gray-800"
+            className="px-8 py-3 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-colors"
           >
             수정
           </button>

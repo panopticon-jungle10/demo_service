@@ -37,22 +37,22 @@ export default function Home() {
     <main className="container mx-auto px-4 py-12">
       <div className="max-w-5xl mx-auto">
         {/* Page Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2 text-black">Q&A</h1>
-          <div className="w-12 h-1 bg-black mx-auto"></div>
+        <div className="text-center mb-10">
+          <h1 className="text-5xl font-bold mb-3 text-gray-900">Q&A</h1>
+          <p className="text-gray-600">로그 수집 서비스에 대한 질문과 답변</p>
         </div>
 
         {/* Table */}
-        <div className="bg-white">
+        <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <table className="w-full">
-            <thead>
-              <tr className="border-t-2 border-black border-b">
-                <th className="py-4 px-4 text-left text-sm font-semibold w-16 text-black">No</th>
-                <th className="py-4 px-4 text-left text-sm font-semibold text-black">제목</th>
-                <th className="py-4 px-4 text-center text-sm font-semibold w-32 text-black">
+            <thead className="bg-gray-50">
+              <tr className="border-b border-gray-200">
+                <th className="py-4 px-4 text-left text-sm font-semibold w-16 text-gray-700">No</th>
+                <th className="py-4 px-4 text-left text-sm font-semibold text-gray-700">제목</th>
+                <th className="py-4 px-4 text-center text-sm font-semibold w-32 text-gray-700">
                   글쓴이
                 </th>
-                <th className="py-4 px-4 text-center text-sm font-semibold w-32 text-black">
+                <th className="py-4 px-4 text-center text-sm font-semibold w-32 text-gray-700">
                   작성시간
                 </th>
               </tr>
@@ -74,20 +74,20 @@ export default function Home() {
                 posts.map((post, index) => (
                   <tr
                     key={post.id}
-                    className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer"
+                    className="border-b border-gray-100 hover:bg-indigo-50 cursor-pointer transition-colors"
                     onClick={() => router.push(`/posts/${post.id}`)}
                   >
-                    <td className="py-4 px-4 text-sm text-black">{posts.length - index}</td>
+                    <td className="py-4 px-4 text-sm text-gray-600">{posts.length - index}</td>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
                         {post.isPrivate && <Lock className="w-4 h-4 text-gray-400" />}
-                        <span className="text-sm text-black">{post.title}</span>
+                        <span className="text-sm text-gray-900 font-medium">{post.title}</span>
                       </div>
                     </td>
-                    <td className="py-4 px-4 text-center text-sm text-black">
+                    <td className="py-4 px-4 text-center text-sm text-gray-600">
                       {post.authorName || 'PLIPOP'}
                     </td>
-                    <td className="py-4 px-4 text-center text-sm text-black">
+                    <td className="py-4 px-4 text-center text-sm text-gray-600">
                       {new Date(post.createdAt).toLocaleDateString('ko-KR')}
                     </td>
                   </tr>
@@ -99,19 +99,19 @@ export default function Home() {
 
         {/* Search & Write Button */}
         <div className="mt-8 flex justify-between items-center">
-          <div className="flex items-center gap-2 border border-gray-300 rounded-full px-4 py-2 w-80">
+          <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-full px-4 py-2.5 w-80 shadow-sm">
             <input
               type="text"
               placeholder="Search"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 outline-none text-sm text-black placeholder:text-gray-400"
+              className="flex-1 outline-none text-sm text-gray-900 placeholder:text-gray-400"
             />
-            <Search className="w-4 h-4 text-black" />
+            <Search className="w-4 h-4 text-gray-400" />
           </div>
           <button
             onClick={() => setShowCreatePost(true)}
-            className="bg-black text-white px-8 py-2 rounded-full text-sm font-semibold hover:bg-gray-800"
+            className="bg-indigo-600 text-white px-8 py-2.5 rounded-full text-sm font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all"
           >
             글쓰기
           </button>
@@ -121,7 +121,7 @@ export default function Home() {
       {/* Floating Chatbot Button */}
       <button
         onClick={() => setShowChatbot(true)}
-        className="fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 z-40"
+        className="fixed bottom-8 right-8 bg-indigo-600 text-white p-4 rounded-full shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:shadow-xl transition-all z-40"
       >
         <MessageCircle className="w-6 h-6" />
       </button>
