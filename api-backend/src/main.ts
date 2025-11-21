@@ -7,7 +7,8 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000',
-      'https://qna.jungle-panopticon.cloud', // 추가
+      'https://qna.jungle-panopticon.cloud',
+      'https://demo-service-two.vercel.app', // 추가
     ],
     credentials: true,
   });

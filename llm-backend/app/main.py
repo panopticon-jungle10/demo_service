@@ -42,7 +42,11 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 # CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://demo-service-two.vercel.app",
+        "https://qna.jungle-panopticon.cloud",
+        "http://localhost:3000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
