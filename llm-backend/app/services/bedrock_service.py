@@ -14,12 +14,38 @@ logger = logging.getLogger(__name__)
 
 class BedrockService:
     def __init__(self):
-        self.region = os.getenv("AWS_REGION", "us-east-1")
-        self.model_id = "anthropic.claude-3-sonnet-20240229-v1:0"
+        self.region = os.getenv("AWS_REGION", "ap-northeast-2")
+        self.model_id = os.getenv(
+            "AWS_MODEL_ID", "anthropic.claude-3-sonnet-20240229-v1:0"
+        )
         self.use_mock = os.getenv("USE_MOCK_AI", "false").lower() == "true"
 
         if not self.use_mock:
-            self.client = boto3.client("bedrock-runtime", region_name=self.region)
+            aws_access_key = os.getenv("AWS_ACCESS_KEY_ID")
+            aws_secret_key = os.getenv("AWS_SECRET_ACCESS_KEY")
+
+            if not aws_access_key or not aws_secret_key:
+                error_msg = (
+                    "AWS credentials not found! Please set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY "
+                    "in .env file, or set USE_MOCK_AI=true for testing."
+                )
+                logger.error(error_msg)
+                raise ValueError(error_msg)
+
+            try:
+                self.client = boto3.client(
+                    "bedrock-runtime",
+                    region_name=self.region,
+                    aws_access_key_id=aws_access_key,
+                    aws_secret_access_key=aws_secret_key,
+                )
+                logger.info(
+                    f"베드락 client initialized with credentials from environment variables (region: {self.region})"
+                )
+            except Exception as e:
+                error_msg = f"Failed to initialize Bedrock client: {e}"
+                logger.error(error_msg)
+                raise RuntimeError(error_msg)
         else:
             self.client = None
             logger.info("Running in MOCK mode - no AWS credentials needed")
@@ -59,23 +85,17 @@ class BedrockService:
 (참고: 현재 MOCK 모드로 실행 중입니다)"""
 
         try:
-            body = json.dumps({
-                "anthropic_version": "bedrock-2023-05-31",
-                "max_tokens": 2048,
-                "temperature": 0.7,
-                "system": self.system_prompt,
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": question
-                    }
-                ]
-            })
-
-            response = self.client.invoke_model(
-                modelId=self.model_id,
-                body=body
+            body = json.dumps(
+                {
+                    "anthropic_version": "bedrock-2023-05-31",
+                    "max_tokens": 2048,
+                    "temperature": 0.7,
+                    "system": self.system_prompt,
+                    "messages": [{"role": "user", "content": question}],
+                }
             )
+
+            response = self.client.invoke_model(modelId=self.model_id, body=body)
 
             response_body = json.loads(response["body"].read())
             answer = response_body["content"][0]["text"]
