@@ -28,28 +28,29 @@ export default function CreatePostModal({
       return;
     }
 
-    if (!isAnonymous && !authorName.trim()) {
-      alert("익명이 아닌 경우 이름이 필요합니다");
+    if (!authorName.trim()) {
+      alert("이름은 필수입니다");
       return;
     }
 
     setLoading(true);
 
     try {
-      await api.createPost({
+      const res = await api.createPost({
         title,
         content,
         password,
-        authorName: isAnonymous ? undefined : authorName,
+        authorName,
         email: email || undefined,
         isAnonymous,
         isPrivate,
       });
 
-      alert("글이 작성되었습니다");
+      alert(`${res.message}`);
       onSuccess();
       onClose();
     } catch (error) {
+      console.log(error);
       alert("글 작성에 실패했습니다");
     } finally {
       setLoading(false);
@@ -105,7 +106,7 @@ export default function CreatePostModal({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 border border-gray-300 rounded text-sm text-black"
-              placeholder="비밀번호 (수정/삭제시 필요)"
+              placeholder="비밀번호 (조회, 수정시 필요)"
             />
           </div>
 
@@ -130,24 +131,27 @@ export default function CreatePostModal({
             </label>
           </div>
 
-          {!isAnonymous && (
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-black">
-                이름 *
-              </label>
-              <input
-                type="text"
-                value={authorName}
-                onChange={(e) => setAuthorName(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded text-sm text-black"
-                placeholder="이름"
-              />
-            </div>
-          )}
+          <div>
+            <label className="block text-sm font-semibold mb-2 text-black">
+              이름 *{" "}
+              {isAnonymous && (
+                <span className="text-xs text-gray-500">
+                  (익명으로 표시됩니다)
+                </span>
+              )}
+            </label>
+            <input
+              type="text"
+              value={authorName}
+              onChange={(e) => setAuthorName(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 rounded text-sm text-black"
+              placeholder="이름 또는 별칭"
+            />
+          </div>
 
           <div>
             <label className="block text-sm font-semibold mb-2 text-black">
-              이메일 (선택)
+              상세 답변 수신 이메일 (선택)
             </label>
             <input
               type="email"

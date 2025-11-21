@@ -19,7 +19,7 @@ import { CommentsModule } from './modules/comments/comments.module';
       database: process.env.DATABASE_NAME || 'demo_service',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
-      logging: true,
+      logging: false,
     }),
     PostsModule,
     CommentsModule,

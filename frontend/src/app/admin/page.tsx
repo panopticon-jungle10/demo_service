@@ -54,9 +54,10 @@ export default function AdminPage() {
 
   const loadPostDetail = async (postId: string) => {
     try {
-      const post = await api.getPost(postId);
+      const post = await api.getPostAsAdmin(postId, adminPassword);
       setSelectedPost(post);
     } catch (error) {
+      alert('글을 불러올 수 없습니다. 관리자 비밀번호를 확인하세요.');
       console.error(error);
     }
   };
@@ -139,9 +140,7 @@ export default function AdminPage() {
                 <h2 className="text-xl font-bold mb-4">글 상세</h2>
                 <div className="bg-white p-6 rounded-lg shadow-md mb-6">
                   <h3 className="text-lg font-bold mb-2">{selectedPost.title}</h3>
-                  <p className="text-gray-800 whitespace-pre-wrap mb-4">
-                    {selectedPost.content}
-                  </p>
+                  <p className="text-gray-800 whitespace-pre-wrap mb-4">{selectedPost.content}</p>
                 </div>
 
                 <div className="bg-white p-6 rounded-lg shadow-md mb-6">
@@ -186,9 +185,7 @@ export default function AdminPage() {
 
                 <div className="bg-white p-6 rounded-lg shadow-md">
                   <h3 className="font-bold mb-4">새 댓글 작성</h3>
-                  <p className="text-sm text-gray-500 mb-4">
-                    * 관리자만 댓글을 작성할 수 있습니다
-                  </p>
+                  <p className="text-sm text-gray-500 mb-4">* 관리자만 댓글을 작성할 수 있습니다</p>
                   <textarea
                     value={commentContent}
                     onChange={(e) => setCommentContent(e.target.value)}
@@ -208,9 +205,7 @@ export default function AdminPage() {
                 </div>
               </div>
             ) : (
-              <div className="text-gray-500 text-center py-8">
-                좌측에서 글을 선택하세요
-              </div>
+              <div className="text-gray-500 text-center py-8">좌측에서 글을 선택하세요</div>
             )}
           </div>
         </div>
