@@ -1,16 +1,12 @@
-import type { Metadata } from 'next'
-import './globals.css'
+import type { Metadata } from 'next';
+import './globals.css';
 
 export const metadata: Metadata = {
   title: '로그 수집 서비스 Q&A',
   description: '로그 수집 서비스에 대한 질문과 답변',
-}
+};
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ko">
       <body className="min-h-screen bg-white">
@@ -20,13 +16,15 @@ export default function RootLayout({
               <div className="flex items-center space-x-8">
                 <h1 className="text-2xl font-bold text-black">LogQ</h1>
                 <div className="hidden md:flex space-x-6 text-sm">
-                  <a href="/" className="text-black hover:text-gray-600">HOME</a>
-                  <a href="/" className="text-black hover:text-gray-600">COMMUNITY</a>
-                  <a href="/" className="text-black hover:text-gray-600">ABOUT</a>
+                  <a href="/" className="text-black hover:text-gray-600">
+                    HOME
+                  </a>
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <a href="/admin" className="text-sm text-black hover:text-gray-600">ADMIN</a>
+                <a href="/admin" className="text-sm text-black hover:text-gray-600">
+                  관리자 페이지
+                </a>
               </div>
             </nav>
           </div>
@@ -34,5 +32,5 @@ export default function RootLayout({
         {children}
       </body>
     </html>
-  )
+  );
 }

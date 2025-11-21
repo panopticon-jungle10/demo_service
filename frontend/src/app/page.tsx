@@ -21,7 +21,8 @@ export default function Home() {
   }, []);
 
   const loadPosts = () => {
-    api.getPosts(1)
+    api
+      .getPosts(1)
       .then((data) => setPosts(data.data || []))
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -41,13 +42,6 @@ export default function Home() {
           <div className="w-12 h-1 bg-black mx-auto"></div>
         </div>
 
-        {/* Category Tabs */}
-        <div className="flex justify-center space-x-6 text-sm mb-8 border-b border-gray-200">
-          <button className="pb-3 border-b-2 border-black font-semibold text-black">Q&A</button>
-          <button className="pb-3 text-black hover:text-gray-600">NOTICE</button>
-          <button className="pb-3 text-black hover:text-gray-600">FAQ</button>
-        </div>
-
         {/* Table */}
         <div className="bg-white">
           <table className="w-full">
@@ -55,8 +49,12 @@ export default function Home() {
               <tr className="border-t-2 border-black border-b">
                 <th className="py-4 px-4 text-left text-sm font-semibold w-16 text-black">No</th>
                 <th className="py-4 px-4 text-left text-sm font-semibold text-black">제목</th>
-                <th className="py-4 px-4 text-center text-sm font-semibold w-32 text-black">글쓴이</th>
-                <th className="py-4 px-4 text-center text-sm font-semibold w-32 text-black">작성시간</th>
+                <th className="py-4 px-4 text-center text-sm font-semibold w-32 text-black">
+                  글쓴이
+                </th>
+                <th className="py-4 px-4 text-center text-sm font-semibold w-32 text-black">
+                  작성시간
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -129,10 +127,7 @@ export default function Home() {
       </button>
 
       {showCreatePost && (
-        <CreatePostModal
-          onClose={() => setShowCreatePost(false)}
-          onSuccess={loadPosts}
-        />
+        <CreatePostModal onClose={() => setShowCreatePost(false)} onSuccess={loadPosts} />
       )}
       {showChatbot && <ChatbotModal onClose={handleCloseChatbot} />}
     </main>
