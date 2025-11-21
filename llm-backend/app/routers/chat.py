@@ -75,7 +75,12 @@ def get_field_metadata():
     }
 
 
-@router.post("/chat", response_model=ChatResponse)
+@router.get("/")
+def health_check():
+    return "ok"
+
+
+@router.post("/llm/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     """
     Single-shot chat endpoint
