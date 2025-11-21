@@ -75,9 +75,9 @@ def get_field_metadata():
     }
 
 
-@router.get("/")
-def health_check():
-    return "ok"
+@router.get("/llm")
+def l_ch():
+    return "welcome to LLM backend"
 
 
 @router.post("/llm/chat", response_model=ChatResponse)

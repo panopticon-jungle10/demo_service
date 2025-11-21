@@ -1,5 +1,5 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-const LLM_URL = process.env.NEXT_PUBLIC_LLM_URL || 'http://localhost:5000';
+const LLM_URL = process.env.NEXT_PUBLIC_LLM_URL || 'http://localhost:5000/llm';
 
 export const api = {
   async getPosts(page: number = 1) {
