@@ -20,57 +20,57 @@ def get_field_metadata():
                 "label": "질문",
                 "required": True,
                 "type": "text",
-                "enabled": True
+                "enabled": True,
             },
             {
                 "name": "wantsToPost",
                 "label": "게시 여부",
                 "required": True,
                 "type": "toggle",
-                "enabled": True
+                "enabled": True,
             },
             {
                 "name": "postData.title",
                 "label": "제목",
                 "required": True,
                 "type": "text",
-                "enabled": "{{wantsToPost}}"
+                "enabled": "{{wantsToPost}}",
             },
             {
                 "name": "postData.password",
                 "label": "비밀번호",
                 "required": True,
                 "type": "password",
-                "enabled": "{{wantsToPost}}"
+                "enabled": "{{wantsToPost}}",
             },
             {
                 "name": "postData.isAnonymous",
                 "label": "익명",
                 "required": True,
                 "type": "toggle",
-                "enabled": "{{wantsToPost}}"
+                "enabled": "{{wantsToPost}}",
             },
             {
                 "name": "postData.isPrivate",
                 "label": "비공개",
                 "required": True,
                 "type": "toggle",
-                "enabled": "{{wantsToPost}}"
+                "enabled": "{{wantsToPost}}",
             },
             {
                 "name": "postData.authorName",
                 "label": "이름",
                 "required": "{{!postData.isAnonymous}}",
                 "type": "text",
-                "enabled": "{{wantsToPost && !postData.isAnonymous}}"
+                "enabled": "{{wantsToPost && !postData.isAnonymous}}",
             },
             {
                 "name": "postData.email",
                 "label": "이메일",
                 "required": False,
                 "type": "email",
-                "enabled": "{{wantsToPost}}"
-            }
+                "enabled": "{{wantsToPost}}",
+            },
         ]
     }
 
@@ -84,8 +84,10 @@ async def chat(request: ChatRequest):
     3. Return complete response
     """
 
-    logger.info(f"Received chat request: conversationId={request.conversationId}, wantsToPost={request.wantsToPost}")
     logger.info(f"Full request data: {request.model_dump()}")
+    logger.info(
+        f"Received chat request: conversationId={request.conversationId}, wantsToPost={request.wantsToPost}"
+    )
     if request.postData:
         logger.info(f"PostData: {request.postData.model_dump()}")
 
@@ -95,8 +97,7 @@ async def chat(request: ChatRequest):
     except Exception as e:
         logger.error(f"Bedrock failed: {e}")
         raise HTTPException(
-            status_code=502,
-            detail="일시적인 오류가 발생했습니다. 다시 질문해주세요"
+            status_code=502, detail="일시적인 오류가 발생했습니다. 다시 질문해주세요"
         )
 
     response_data = {
@@ -106,7 +107,7 @@ async def chat(request: ChatRequest):
         "commentCreated": False,
         "commentError": None,
         "nextStep": "completed",
-        "meta": get_field_metadata()
+        "meta": get_field_metadata(),
     }
 
     # Step 2: If user wants to post
@@ -121,23 +122,21 @@ async def chat(request: ChatRequest):
         is_anonymous=request.postData.isAnonymous,
         is_private=request.postData.isPrivate,
         author_name=request.postData.authorName,
-        email=request.postData.email
+        email=request.postData.email,
     )
 
     if not post_result:
         logger.error("Failed to create post")
         raise HTTPException(
             status_code=502,
-            detail="글 작성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요"
+            detail="글 작성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요",
         )
 
     response_data["postCreated"] = post_result
 
     # Step 4: Auto-create AI comment
     comment_success = await api_backend_service.create_comment(
-        post_id=post_result["id"],
-        content=ai_answer,
-        is_ai_generated=True
+        post_id=post_result["id"], content=ai_answer, is_ai_generated=True
     )
 
     response_data["commentCreated"] = comment_success
@@ -148,7 +147,9 @@ async def chat(request: ChatRequest):
 
     # Update reply message
     if post_result:
-        reply_message = f"{ai_answer}\n\n글이 생성되었습니다. 글 번호: {post_result['postId']}"
+        reply_message = (
+            f"{ai_answer}\n\n글이 생성되었습니다. 글 번호: {post_result['postId']}"
+        )
         if comment_success:
             reply_message += "\nAI 답변이 댓글로 등록되었습니다."
         response_data["reply"] = reply_message

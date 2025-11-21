@@ -15,8 +15,7 @@ load_dotenv()
 
 # Configure logging
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 logger = logging.getLogger(__name__)
@@ -39,6 +38,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         content={"detail": exc.errors()},
     )
 
+
 # CORS
 app.add_middleware(
     CORSMiddleware,
@@ -52,7 +52,7 @@ app.add_middleware(
 app.include_router(chat.router, tags=["chat"])
 
 
-@app.get("/")
+@app.get("/health")
 async def health_check():
     return {
         "status": "ok",
@@ -63,5 +63,6 @@ async def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv("PORT", 5000))
+
+    port = int(os.getenv("PORT", 8001))
     uvicorn.run("app.main:app", host="0.0.0.0", port=port, reload=True)
