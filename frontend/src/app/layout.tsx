@@ -22,7 +22,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </div>
               </div>
               <div className="flex items-center space-x-4">
-                <a href="/admin" className="text-sm text-gray-700 hover:text-indigo-600 font-medium">
+                <a
+                  href="/admin"
+                  className="text-sm text-gray-700 hover:text-indigo-600 font-medium"
+                >
                   관리자 페이지
                 </a>
               </div>

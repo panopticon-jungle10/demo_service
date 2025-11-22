@@ -39,7 +39,7 @@ export default function Home() {
         {/* Page Title */}
         <div className="text-center mb-10">
           <h1 className="text-5xl font-bold mb-3 text-gray-900">Q&A</h1>
-          <p className="text-gray-600">로그 수집 서비스에 대한 질문과 답변</p>
+          <p className="text-gray-600">서비스에 대한 질문과 답변</p>
         </div>
 
         {/* Table */}
