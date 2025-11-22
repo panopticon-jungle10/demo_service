@@ -22,9 +22,7 @@ import { CommentsModule } from './modules/comments/comments.module';
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
       logging: true,
-      // ssl: {
-      //   rejectUnauthorized: false, // RDS의 경우 필수
-      // },
+      maxQueryExecutionTime: 1, // 1ms 이상 걸리는 쿼리를 logQuerySlow로 전달 (거의 모든 쿼리)
     }),
     PostsModule,
     CommentsModule,

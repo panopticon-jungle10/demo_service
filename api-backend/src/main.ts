@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { AppModule } from './app.module';
 import { MonitoringSDK } from '@woongno/nestjs-monitoring-sdk';
+import { DataSource } from 'typeorm';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -23,13 +24,19 @@ async function bootstrap() {
   const actualWinstonLogger = nestWinstonLogger.getWinstonLogger();
 
   // Monitoring SDK 초기화 - 실제 winston logger 인스턴스 전달
-  MonitoringSDK.init(app, {
+  const sdk = MonitoringSDK.init(app, {
     apiKey: 'demo-service-api-key',
     endpoint: 'http://localhost:3005/producer/sdk/log',
     serviceName: 'demo-service-api',
     environment: process.env.NODE_ENV || 'development',
     logger: actualWinstonLogger, // NestJS wrapper가 실제로 사용하는 winston 인스턴스
   });
+
+  // TypeORM DataSource에 DB logger 설정
+  const dataSource = app.get(DataSource);
+  // @ts-ignore - TypeORM 내부 API 사용
+  dataSource.logger = sdk.getDbLogger();
+  console.log('[main.ts] DB logger set to SDK logger');
 
   const port = process.env.PORT || 3001;
   await app.listen(port);
