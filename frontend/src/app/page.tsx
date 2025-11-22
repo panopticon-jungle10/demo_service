@@ -37,13 +37,13 @@ export default function Home() {
     <main className="container mx-auto px-4 py-12">
       <div className="max-w-5xl mx-auto">
         {/* Page Title */}
-        <div className="text-center mb-10">
-          <h1 className="text-5xl font-bold mb-3 text-gray-900">Q&A</h1>
-          <p className="text-gray-600">서비스에 대한 질문과 답변</p>
+        <div className="text-center mb-6 md:mb-10">
+          <h1 className="text-3xl md:text-5xl font-bold mb-2 md:mb-3 text-gray-900">Q&A</h1>
+          <p className="text-sm md:text-base text-gray-600">서비스에 대한 질문과 답변</p>
         </div>
 
-        {/* Table */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        {/* Table - Desktop */}
+        <div className="hidden md:block bg-white rounded-lg shadow-md overflow-hidden">
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr className="border-b border-gray-200">
@@ -97,9 +97,42 @@ export default function Home() {
           </table>
         </div>
 
+        {/* Card List - Mobile */}
+        <div className="md:hidden space-y-3">
+          {loading ? (
+            <div className="bg-white rounded-lg shadow-md p-8 text-center text-gray-500">
+              로딩 중...
+            </div>
+          ) : posts.length === 0 ? (
+            <div className="bg-white rounded-lg shadow-md p-8 text-center text-gray-500">
+              등록된 게시물이 없습니다.
+            </div>
+          ) : (
+            posts.map((post, index) => (
+              <div
+                key={post.id}
+                className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg cursor-pointer transition-shadow"
+                onClick={() => router.push(`/posts/${post.id}`)}
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center gap-2 flex-1">
+                    {post.isPrivate && <Lock className="w-4 h-4 text-gray-400 flex-shrink-0" />}
+                    <span className="text-sm text-gray-900 font-medium line-clamp-2">{post.title}</span>
+                  </div>
+                  <span className="text-xs text-gray-400 ml-2 flex-shrink-0">#{posts.length - index}</span>
+                </div>
+                <div className="flex items-center justify-between text-xs text-gray-500">
+                  <span>{post.authorName || 'PLIPOP'}</span>
+                  <span>{new Date(post.createdAt).toLocaleDateString('ko-KR')}</span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
         {/* Search & Write Button */}
-        <div className="mt-8 flex justify-between items-center">
-          <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-full px-4 py-2.5 w-80 shadow-sm">
+        <div className="mt-6 md:mt-8 flex flex-col sm:flex-row gap-3 sm:justify-between sm:items-center">
+          <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-full px-4 py-2.5 w-full sm:w-80 shadow-sm">
             <input
               type="text"
               placeholder="Search"
@@ -111,7 +144,7 @@ export default function Home() {
           </div>
           <button
             onClick={() => setShowCreatePost(true)}
-            className="bg-indigo-600 text-white px-8 py-2.5 rounded-full text-sm font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all"
+            className="bg-indigo-600 text-white px-8 py-2.5 rounded-full text-sm font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all w-full sm:w-auto"
           >
             글쓰기
           </button>

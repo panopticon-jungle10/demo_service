@@ -81,8 +81,8 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
   };
 
   return (
-    <div className="fixed bottom-24 right-8 z-50 w-[400px]">
-      <div className="bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[600px]">
+    <div className="fixed bottom-4 sm:bottom-24 right-4 sm:right-8 z-50 w-full sm:w-[400px] max-w-[calc(100vw-2rem)] sm:max-w-[400px]">
+      <div className="bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[500px] sm:h-[600px]">
         <div className="flex justify-between items-center px-6 py-4 bg-indigo-600 text-white">
           <h2 className="text-xl font-bold">AI 챗봇</h2>
           <button

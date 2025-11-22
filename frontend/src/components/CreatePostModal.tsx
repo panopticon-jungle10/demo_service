@@ -59,14 +59,14 @@ export default function CreatePostModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-gray-900">글 작성</h2>
+      <div className="bg-white rounded-xl shadow-2xl p-4 sm:p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4 sm:mb-6">
+          <h2 className="text-xl sm:text-3xl font-bold text-gray-900">글 작성</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition-colors"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 
@@ -163,7 +163,7 @@ export default function CreatePostModal({
           </div>
         </div>
 
-        <div className="mt-8 flex gap-3">
+        <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3">
           <button
             onClick={handleSubmit}
             disabled={loading}

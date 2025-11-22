@@ -13,15 +13,20 @@ export default function PostDetailPage() {
   const [loading, setLoading] = useState(true);
   const [password, setPassword] = useState('');
   const [needsPassword, setNeedsPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
 
   const fetchPost = async (pwd?: string) => {
     try {
       const data = await api.getPost(params.id as string, pwd);
       setPost(data);
       setNeedsPassword(false);
+      setPasswordError(false);
     } catch (error: any) {
       if (error.status === 401) {
         setNeedsPassword(true);
+        if (pwd) {
+          setPasswordError(true);
+        }
       } else {
         alert('글을 불러올 수 없습니다');
         router.push('/');
@@ -61,14 +66,24 @@ export default function PostDetailPage() {
           <input
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => {
+              setPassword(e.target.value);
+              setPasswordError(false);
+            }}
             onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg mb-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className={`w-full px-4 py-2.5 border rounded-lg mb-1 text-sm transition-colors ${
+              passwordError
+                ? 'border-red-500 focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-red-500'
+                : 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent'
+            }`}
             placeholder="비밀번호"
           />
+          {passwordError && (
+            <p className="text-red-500 text-xs mb-3">비밀번호를 다시 입력해주세요</p>
+          )}
           <button
             onClick={handlePasswordSubmit}
-            className="w-full bg-indigo-600 text-white py-3 rounded-lg text-sm font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-colors"
+            className="w-full bg-indigo-600 text-white py-3 rounded-lg text-sm font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-colors mt-3"
           >
             확인
           </button>
@@ -80,49 +95,50 @@ export default function PostDetailPage() {
   if (!post) return null;
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-6 md:py-12">
       <div className="max-w-4xl mx-auto">
         {/* Post Detail */}
         <div className="bg-white border border-gray-200 rounded-xl shadow-md">
           {/* Header */}
-          <div className="border-b border-gray-200 p-8">
-            <h1 className="text-3xl font-bold mb-4 text-gray-900">{post.title}</h1>
-            <div className="flex items-center justify-between text-sm text-gray-600">
-              <div className="flex items-center gap-4">
+          <div className="border-b border-gray-200 p-4 md:p-8">
+            <h1 className="text-xl md:text-3xl font-bold mb-3 md:mb-4 text-gray-900">{post.title}</h1>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs md:text-sm text-gray-600">
+              <div className="flex items-center gap-2 md:gap-4">
                 <span>작성자: {post.isAnonymous ? '익명' : post.authorName}</span>
-                <span>{new Date(post.createdAt).toLocaleString('ko-KR')}</span>
+                <span className="hidden sm:inline">{new Date(post.createdAt).toLocaleString('ko-KR')}</span>
+                <span className="sm:hidden">{new Date(post.createdAt).toLocaleDateString('ko-KR')}</span>
               </div>
             </div>
           </div>
 
           {/* Content */}
-          <div className="p-8 min-h-[300px]">
-            <p className="text-gray-900 whitespace-pre-wrap leading-relaxed text-base">{post.content}</p>
+          <div className="p-4 md:p-8 min-h-[200px] md:min-h-[300px]">
+            <p className="text-gray-900 whitespace-pre-wrap leading-relaxed text-sm md:text-base">{post.content}</p>
             {post.email && (
-              <p className="text-sm text-gray-600 mt-6">이메일: {post.email}</p>
+              <p className="text-xs md:text-sm text-gray-600 mt-4 md:mt-6">이메일: {post.email}</p>
             )}
           </div>
 
           {/* Comments */}
           {post.comments && post.comments.length > 0 && (
-            <div className="border-t border-gray-200 p-8 bg-gray-50">
-              <h3 className="text-xl font-bold mb-6 text-gray-900">답변 ({post.comments.length})</h3>
+            <div className="border-t border-gray-200 p-4 md:p-8 bg-gray-50">
+              <h3 className="text-lg md:text-xl font-bold mb-4 md:mb-6 text-gray-900">답변 ({post.comments.length})</h3>
               <CommentList comments={post.comments} />
             </div>
           )}
         </div>
 
         {/* Action Buttons */}
-        <div className="mt-8 flex justify-center gap-3">
+        <div className="mt-6 md:mt-8 flex flex-col sm:flex-row justify-center gap-3">
           <button
             onClick={() => router.push('/')}
-            className="px-8 py-3 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200 transition-colors"
+            className="px-8 py-3 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200 transition-colors w-full sm:w-auto"
           >
             목록
           </button>
           <button
             onClick={handleEdit}
-            className="px-8 py-3 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-colors"
+            className="px-8 py-3 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-colors w-full sm:w-auto"
           >
             수정
           </button>

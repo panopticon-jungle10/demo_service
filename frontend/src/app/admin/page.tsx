@@ -13,6 +13,7 @@ export default function AdminPage() {
   const [commentContent, setCommentContent] = useState('');
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
+  const [passwordError, setPasswordError] = useState(false);
 
   useEffect(() => {
     const saved = sessionStorage.getItem('adminPassword');
@@ -23,11 +24,18 @@ export default function AdminPage() {
     }
   }, []);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!adminPassword) return;
-    sessionStorage.setItem('adminPassword', adminPassword);
-    setAuthenticated(true);
-    loadPosts();
+
+    try {
+      const data = await api.getPosts(1);
+      sessionStorage.setItem('adminPassword', adminPassword);
+      setAuthenticated(true);
+      setPasswordError(false);
+      setPosts(data.data || []);
+    } catch (error) {
+      setPasswordError(true);
+    }
   };
 
   const loadPosts = async () => {
@@ -93,14 +101,24 @@ export default function AdminPage() {
           <input
             type="password"
             value={adminPassword}
-            onChange={(e) => setAdminPassword(e.target.value)}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg mb-4 outline-none focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 text-sm"
+            onChange={(e) => {
+              setAdminPassword(e.target.value);
+              setPasswordError(false);
+            }}
+            className={`w-full px-4 py-2.5 border rounded-lg mb-1 outline-none text-sm transition-colors ${
+              passwordError
+                ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-100'
+                : 'border-gray-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100'
+            }`}
             placeholder="관리자 비밀번호"
             onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
           />
+          {passwordError && (
+            <p className="text-red-500 text-xs mb-3">비밀번호를 다시 입력해주세요</p>
+          )}
           <button
             onClick={handleLogin}
-            className="w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 font-semibold shadow-lg shadow-indigo-200 transition-all"
+            className="w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 font-semibold shadow-lg shadow-indigo-200 transition-all mt-3"
           >
             로그인
           </button>
@@ -110,14 +128,14 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-6 md:py-12">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-10">
-          <h1 className="text-5xl font-bold mb-3 text-gray-900">관리자 페이지</h1>
-          <p className="text-gray-600">댓글 관리</p>
+        <div className="text-center mb-6 md:mb-10">
+          <h1 className="text-3xl md:text-5xl font-bold mb-2 md:mb-3 text-gray-900">관리자 페이지</h1>
+          <p className="text-sm md:text-base text-gray-600">댓글 관리</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Post List */}
           <div>
             <h2 className="text-2xl font-bold mb-6 text-gray-900">글 목록</h2>
