@@ -20,8 +20,17 @@ export default function AdminPage() {
     const saved = sessionStorage.getItem('adminPassword');
     if (saved) {
       setAdminPassword(saved);
-      setAuthenticated(true);
-      loadPosts();
+      // 저장된 비밀번호 재검증
+      api.verifyAdmin(saved)
+        .then(() => {
+          setAuthenticated(true);
+          loadPosts();
+        })
+        .catch(() => {
+          // 비밀번호가 유효하지 않으면 sessionStorage 삭제
+          sessionStorage.removeItem('adminPassword');
+          setAdminPassword('');
+        });
     }
   }, []);
 
@@ -29,11 +38,11 @@ export default function AdminPage() {
     if (!adminPassword) return;
 
     try {
-      const data = await api.getPosts(1);
+      await api.verifyAdmin(adminPassword);
       sessionStorage.setItem('adminPassword', adminPassword);
       setAuthenticated(true);
       setPasswordError(false);
-      setPosts(data.data || []);
+      await loadPosts();
     } catch (error) {
       setPasswordError(true);
     }
