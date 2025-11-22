@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
 import { AppController } from './app.controller';
 import { PostsModule } from './modules/posts/posts.module';
 import { CommentsModule } from './modules/comments/comments.module';
@@ -9,6 +11,19 @@ import { CommentsModule } from './modules/comments/comments.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    WinstonModule.forRoot({
+      transports: [
+        new winston.transports.Console({
+          format: winston.format.combine(
+            winston.format.timestamp(),
+            winston.format.colorize(),
+            winston.format.printf(({ timestamp, level, message, context }) => {
+              return `${timestamp} [${context || 'Application'}] ${level}: ${message}`;
+            }),
+          ),
+        }),
+      ],
     }),
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -19,7 +34,7 @@ import { CommentsModule } from './modules/comments/comments.module';
       database: process.env.DATABASE_NAME || 'demo_service',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
-      logging: false,
+      logging: true,
       // ssl: {
       //   rejectUnauthorized: false, // RDS의 경우 필수
       // },
