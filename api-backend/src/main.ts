@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
 import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { AppModule } from './app.module';
-import { MonitoringSDK } from '@woongno/nestjs-monitoring-sdk';
 import { DataSource } from 'typeorm';
+import { MonitoringSDK } from '@panopticon/nestjs-monitoring-sdk';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
