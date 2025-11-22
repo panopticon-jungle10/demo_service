@@ -192,4 +192,12 @@ export class PostsService {
   async getAllCount() {
     return await this.postsRepository.count();
   }
+
+  async verifyAdmin(adminPassword: string) {
+    const envAdminPassword = process.env.ADMIN_PASSWORD;
+    if (!envAdminPassword || adminPassword !== envAdminPassword) {
+      throw new UnauthorizedException('관리자 권한이 필요합니다.');
+    }
+    return { message: '인증되었습니다.' };
+  }
 }
