@@ -33,6 +33,10 @@ export default function Home() {
     loadPosts();
   };
 
+  const filteredPosts = posts.filter((post) =>
+    post.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <main className="container mx-auto px-4 py-12">
       <div className="max-w-5xl mx-auto">
@@ -64,20 +68,20 @@ export default function Home() {
                     로딩 중...
                   </td>
                 </tr>
-              ) : posts.length === 0 ? (
+              ) : filteredPosts.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="py-12 text-center text-gray-500">
-                    등록된 게시물이 없습니다.
+                    {searchTerm ? '검색 결과가 없습니다.' : '등록된 게시물이 없습니다.'}
                   </td>
                 </tr>
               ) : (
-                posts.map((post, index) => (
+                filteredPosts.map((post, index) => (
                   <tr
                     key={post.id}
                     className="border-b border-gray-100 hover:bg-indigo-50 cursor-pointer transition-colors"
                     onClick={() => router.push(`/posts/${post.id}`)}
                   >
-                    <td className="py-4 px-4 text-sm text-gray-600">{posts.length - index}</td>
+                    <td className="py-4 px-4 text-sm text-gray-600">{filteredPosts.length - index}</td>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
                         {post.isPrivate && <Lock className="w-4 h-4 text-gray-400" />}
@@ -103,12 +107,12 @@ export default function Home() {
             <div className="bg-white rounded-lg shadow-md p-8 text-center text-gray-500">
               로딩 중...
             </div>
-          ) : posts.length === 0 ? (
+          ) : filteredPosts.length === 0 ? (
             <div className="bg-white rounded-lg shadow-md p-8 text-center text-gray-500">
-              등록된 게시물이 없습니다.
+              {searchTerm ? '검색 결과가 없습니다.' : '등록된 게시물이 없습니다.'}
             </div>
           ) : (
-            posts.map((post, index) => (
+            filteredPosts.map((post, index) => (
               <div
                 key={post.id}
                 className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg cursor-pointer transition-shadow"
@@ -119,7 +123,7 @@ export default function Home() {
                     {post.isPrivate && <Lock className="w-4 h-4 text-gray-400 flex-shrink-0" />}
                     <span className="text-sm text-gray-900 font-medium line-clamp-2">{post.title}</span>
                   </div>
-                  <span className="text-xs text-gray-400 ml-2 flex-shrink-0">#{posts.length - index}</span>
+                  <span className="text-xs text-gray-400 ml-2 flex-shrink-0">#{filteredPosts.length - index}</span>
                 </div>
                 <div className="flex items-center justify-between text-xs text-gray-500">
                   <span>{post.authorName || 'PLIPOP'}</span>
@@ -132,15 +136,23 @@ export default function Home() {
 
         {/* Search & Write Button */}
         <div className="mt-6 md:mt-8 flex flex-col sm:flex-row gap-3 sm:justify-between sm:items-center">
-          <div className="flex items-center gap-2 bg-white border border-gray-300 rounded-full px-4 py-2.5 w-full sm:w-80 shadow-sm">
+          <div className="relative flex items-center gap-2 bg-white border border-gray-300 rounded-full px-4 py-2.5 w-full sm:w-80 shadow-sm focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-100 transition-all">
+            <Search className="w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search"
+              placeholder="제목으로 검색..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="flex-1 outline-none text-sm text-gray-900 placeholder:text-gray-400"
             />
-            <Search className="w-4 h-4 text-gray-400" />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <span className="text-lg leading-none">×</span>
+              </button>
+            )}
           </div>
           <button
             onClick={() => setShowCreatePost(true)}

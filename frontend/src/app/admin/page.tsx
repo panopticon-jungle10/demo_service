@@ -14,6 +14,7 @@ export default function AdminPage() {
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
   const [passwordError, setPasswordError] = useState(false);
+  const [activeTab, setActiveTab] = useState<'pending' | 'completed'>('pending');
 
   useEffect(() => {
     const saved = sessionStorage.getItem('adminPassword');
@@ -47,6 +48,9 @@ export default function AdminPage() {
     }
   };
 
+  const pendingPosts = posts.filter(post => !post.comments || post.comments.length === 0);
+  const completedPosts = posts.filter(post => post.comments && post.comments.length > 0);
+
   const handleCreateComment = async () => {
     if (!commentContent.trim() || !selectedPost) return;
 
@@ -54,6 +58,7 @@ export default function AdminPage() {
       await api.createComment(selectedPost.id, commentContent, adminPassword, false);
       alert('댓글이 작성되었습니다');
       setCommentContent('');
+      await loadPosts();
       await loadPostDetail(selectedPost.id);
     } catch (error) {
       alert('댓글 작성 실패: 관리자 비밀번호를 확인하세요');
@@ -75,7 +80,10 @@ export default function AdminPage() {
       await api.updateComment(commentId, editContent, adminPassword);
       alert('댓글이 수정되었습니다');
       setEditingCommentId(null);
-      if (selectedPost) await loadPostDetail(selectedPost.id);
+      if (selectedPost) {
+        await loadPosts();
+        await loadPostDetail(selectedPost.id);
+      }
     } catch (error) {
       alert('수정 실패');
     }
@@ -87,7 +95,10 @@ export default function AdminPage() {
     try {
       await api.deleteComment(commentId, adminPassword);
       alert('댓글이 삭제되었습니다');
-      if (selectedPost) await loadPostDetail(selectedPost.id);
+      if (selectedPost) {
+        await loadPosts();
+        await loadPostDetail(selectedPost.id);
+      }
     } catch (error) {
       alert('삭제 실패');
     }
@@ -138,7 +149,32 @@ export default function AdminPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Post List */}
           <div>
-            <h2 className="text-2xl font-bold mb-6 text-gray-900">글 목록</h2>
+            <div className="mb-6">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-3">문의 목록</h2>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setActiveTab('pending')}
+                  className={`flex-1 md:flex-none px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-semibold transition-colors ${
+                    activeTab === 'pending'
+                      ? 'bg-orange-100 text-orange-700 border border-orange-300'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  답변 대기 ({pendingPosts.length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('completed')}
+                  className={`flex-1 md:flex-none px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-semibold transition-colors ${
+                    activeTab === 'completed'
+                      ? 'bg-green-100 text-green-700 border border-green-300'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  답변 완료 ({completedPosts.length})
+                </button>
+              </div>
+            </div>
+
             <div className="bg-white rounded-lg shadow-md overflow-hidden">
               <table className="w-full">
                 <thead className="bg-gray-50">
@@ -150,21 +186,30 @@ export default function AdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {posts.length === 0 ? (
+                  {(activeTab === 'pending' ? pendingPosts : completedPosts).length === 0 ? (
                     <tr>
                       <td colSpan={2} className="py-12 text-center text-gray-500">
-                        등록된 게시물이 없습니다.
+                        {activeTab === 'pending' ? '답변 대기 중인 글이 없습니다.' : '답변 완료된 글이 없습니다.'}
                       </td>
                     </tr>
                   ) : (
-                    posts.map((post) => (
+                    (activeTab === 'pending' ? pendingPosts : completedPosts).map((post) => (
                       <tr
                         key={post.id}
-                        className="border-b border-gray-100 hover:bg-indigo-50 cursor-pointer transition-colors"
+                        className={`border-b border-gray-100 hover:bg-indigo-50 cursor-pointer transition-colors ${
+                          selectedPost?.id === post.id ? 'bg-indigo-50' : ''
+                        }`}
                         onClick={() => loadPostDetail(post.id)}
                       >
                         <td className="py-4 px-4">
-                          <span className="text-sm text-gray-900 font-medium">{post.title}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-900 font-medium">{post.title}</span>
+                            {activeTab === 'pending' && (
+                              <span className="px-2 py-0.5 bg-orange-100 text-orange-700 text-xs rounded-full">
+                                대기
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="py-4 px-4 text-center text-sm text-gray-600">
                           {post.comments?.length || 0}
