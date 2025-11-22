@@ -81,150 +81,152 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-black">AI 챗봇</h2>
+    <div className="fixed bottom-4 sm:bottom-24 right-4 sm:right-8 z-50 w-full sm:w-[400px] max-w-[calc(100vw-2rem)] sm:max-w-[400px]">
+      <div className="bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col h-[500px] sm:h-[600px]">
+        <div className="flex justify-between items-center px-6 py-4 bg-indigo-600 text-white">
+          <h2 className="text-xl font-bold">AI 챗봇</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-white hover:text-gray-200 transition-colors"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        {step === "question" && (
-          <div>
-            <label className="block mb-2 font-semibold text-black">
-              질문을 입력하세요
-            </label>
-            <textarea
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              className="w-full px-4 py-2 border rounded-lg mb-4 text-black"
-              rows={4}
-              placeholder="로그 수집에 대해 궁금한 점을 질문해주세요"
-            />
-            <button
-              onClick={handleSubmitQuestion}
-              disabled={loading}
-              className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
-            >
-              {loading ? "처리 중..." : "질문하기"}
-            </button>
-          </div>
-        )}
+        <div className="flex-1 overflow-y-auto p-6">
 
-        {step === "ai_answer" && (
-          <div>
-            <div className="bg-gray-100 p-4 rounded-lg mb-6">
-              <p className="whitespace-pre-wrap text-black">{aiAnswer}</p>
-            </div>
-
-            <h3 className="text-lg font-semibold mb-4 text-black">글로 작성하시겠습니까?</h3>
-
-            <div className="flex gap-4">
+          {step === "question" && (
+            <div>
+              <label className="block mb-3 font-semibold text-gray-700 text-sm">
+                질문을 입력하세요
+              </label>
+              <textarea
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                className="w-full px-3 py-2.5 border border-gray-300 rounded-lg mb-4 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+                rows={5}
+                placeholder="로그 수집에 대해 궁금한 점을 질문해주세요"
+              />
               <button
-                onClick={() => setStep("post_form")}
-                className="flex-1 bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 font-semibold"
+                onClick={handleSubmitQuestion}
+                disabled={loading}
+                className="w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 font-semibold transition-colors text-sm"
               >
-                네
-              </button>
-              <button
-                onClick={onClose}
-                className="flex-1 bg-gray-400 text-white py-3 rounded-lg hover:bg-gray-500 font-semibold"
-              >
-                아니요
+                {loading ? "처리 중..." : "질문하기"}
               </button>
             </div>
-          </div>
-        )}
+          )}
 
-        {step === "post_form" && (
-          <div>
-            <div className="bg-gray-100 p-4 rounded-lg mb-6">
-              <p className="whitespace-pre-wrap text-black">{aiAnswer}</p>
+          {step === "ai_answer" && (
+            <div>
+              <div className="bg-indigo-50 border border-indigo-100 p-4 rounded-lg mb-4">
+                <p className="whitespace-pre-wrap text-gray-900 leading-relaxed text-sm">{aiAnswer}</p>
+              </div>
+
+              <h3 className="text-base font-semibold mb-4 text-gray-900">글로 작성하시겠습니까?</h3>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setStep("post_form")}
+                  className="flex-1 bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 font-semibold transition-colors text-sm"
+                >
+                  네
+                </button>
+                <button
+                  onClick={onClose}
+                  className="flex-1 bg-gray-200 text-gray-700 py-2.5 rounded-lg hover:bg-gray-300 font-semibold transition-colors text-sm"
+                >
+                  아니요
+                </button>
+              </div>
             </div>
+          )}
 
-            <h3 className="text-lg font-semibold mb-4 text-black">글로 작성하기</h3>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block mb-2 font-semibold text-black">제목 *</label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg text-black"
-                  placeholder="제목을 입력하세요"
-                />
+          {step === "post_form" && (
+            <div>
+              <div className="bg-indigo-50 border border-indigo-100 p-4 rounded-lg mb-4">
+                <p className="whitespace-pre-wrap text-gray-900 leading-relaxed text-sm">{aiAnswer}</p>
               </div>
 
-              <div>
-                <label className="block mb-2 font-semibold text-black">비밀번호 *</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg text-black"
-                  placeholder="글 수정시 필요한 비밀번호"
-                />
-              </div>
+              <h3 className="text-base font-semibold mb-4 text-gray-900">글로 작성하기</h3>
 
-              <div>
-                <label className="block mb-2 font-semibold text-black">이름 *</label>
-                <input
-                  type="text"
-                  value={authorName}
-                  onChange={(e) => setAuthorName(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg text-black"
-                  placeholder="이름"
-                />
-              </div>
-
-              <div>
-                <label className="block mb-2 font-semibold text-black">이메일 (선택)</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2 border rounded-lg text-black"
-                  placeholder="email@example.com"
-                />
-              </div>
-
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2">
+              <div className="space-y-3">
+                <div>
+                  <label className="block mb-1.5 font-semibold text-gray-700 text-sm">제목 *</label>
                   <input
-                    type="checkbox"
-                    checked={isAnonymous}
-                    onChange={(e) => setIsAnonymous(e.target.checked)}
-                    className="w-4 h-4"
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="제목을 입력하세요"
                   />
-                  <span className="text-sm text-black">익명으로 작성</span>
-                </label>
-                <label className="flex items-center gap-2">
+                </div>
+
+                <div>
+                  <label className="block mb-1.5 font-semibold text-gray-700 text-sm">비밀번호 *</label>
                   <input
-                    type="checkbox"
-                    checked={isPrivate}
-                    onChange={(e) => setIsPrivate(e.target.checked)}
-                    className="w-4 h-4"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="글 수정시 필요한 비밀번호"
                   />
-                  <span className="text-sm text-black">비공개로 작성</span>
-                </label>
+                </div>
+
+                <div>
+                  <label className="block mb-1.5 font-semibold text-gray-700 text-sm">이름 *</label>
+                  <input
+                    type="text"
+                    value={authorName}
+                    onChange={(e) => setAuthorName(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="이름"
+                  />
+                </div>
+
+                <div>
+                  <label className="block mb-1.5 font-semibold text-gray-700 text-sm">이메일 (선택)</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    placeholder="email@example.com"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2 py-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isAnonymous}
+                      onChange={(e) => setIsAnonymous(e.target.checked)}
+                      className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 rounded"
+                    />
+                    <span className="text-xs text-gray-700 font-medium">익명으로 작성</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isPrivate}
+                      onChange={(e) => setIsPrivate(e.target.checked)}
+                      className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 rounded"
+                    />
+                    <span className="text-xs text-gray-700 font-medium">비공개로 작성</span>
+                  </label>
+                </div>
+
+                <button
+                  onClick={handleFinalSubmit}
+                  disabled={loading || !title.trim() || !password.trim() || !authorName.trim()}
+                  className="w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 font-semibold transition-colors text-sm"
+                >
+                  {loading ? "제출 중..." : "글 작성하기"}
+                </button>
               </div>
-
-              <button
-                onClick={handleFinalSubmit}
-                disabled={loading || !title.trim() || !password.trim() || !authorName.trim()}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 font-semibold"
-              >
-                {loading ? "제출 중..." : "글 작성하기"}
-              </button>
             </div>
-          </div>
-        )}
-
+          )}
+        </div>
       </div>
     </div>
   );
