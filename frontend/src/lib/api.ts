@@ -114,4 +114,14 @@ export const api = {
     if (!res.ok) throw new Error('Failed to chat');
     return res.json();
   },
+
+  async verifyAdmin(adminPassword: string) {
+    const res = await fetch(`${API_URL}/posts/verify-admin`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ adminPassword }),
+    });
+    if (!res.ok) throw new Error('Failed to verify admin password');
+    return res.json();
+  },
 };

@@ -22,6 +22,8 @@ export default function EditPostPage() {
 
   const [needsPassword, setNeedsPassword] = useState(false);
   const [accessPassword, setAccessPassword] = useState('');
+  const [accessPasswordError, setAccessPasswordError] = useState(false);
+  const [updatePasswordError, setUpdatePasswordError] = useState(false);
 
   const fetchPost = async (pwd?: string) => {
     try {
@@ -34,9 +36,13 @@ export default function EditPostPage() {
       setIsAnonymous(data.isAnonymous ?? true);
       setIsPrivate(data.isPrivate ?? true);
       setNeedsPassword(false);
+      setAccessPasswordError(false);
     } catch (error: any) {
       if (error.status === 401) {
         setNeedsPassword(true);
+        if (pwd) {
+          setAccessPasswordError(true);
+        }
       } else {
         alert('글을 불러올 수 없습니다');
         router.push('/');
@@ -80,10 +86,11 @@ export default function EditPostPage() {
       });
 
       alert('글이 수정되었습니다');
+      setUpdatePasswordError(false);
       router.push(`/posts/${params.id}`);
     } catch (error: any) {
       if (error.status === 401) {
-        alert('비밀번호가 올바르지 않습니다');
+        setUpdatePasswordError(true);
       } else {
         alert('글 수정에 실패했습니다');
       }
@@ -109,14 +116,24 @@ export default function EditPostPage() {
           <input
             type="password"
             value={accessPassword}
-            onChange={(e) => setAccessPassword(e.target.value)}
+            onChange={(e) => {
+              setAccessPassword(e.target.value);
+              setAccessPasswordError(false);
+            }}
             onKeyPress={(e) => e.key === 'Enter' && handlePasswordSubmit()}
-            className="w-full px-4 py-2 border border-gray-300 rounded mb-4 text-sm"
+            className={`w-full px-4 py-2 border rounded mb-1 text-sm transition-colors ${
+              accessPasswordError
+                ? 'border-red-500 focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-red-500'
+                : 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent'
+            }`}
             placeholder="비밀번호"
           />
+          {accessPasswordError && (
+            <p className="text-red-500 text-xs mb-3">비밀번호를 다시 입력해주세요</p>
+          )}
           <button
             onClick={handlePasswordSubmit}
-            className="w-full bg-black text-white py-2 rounded text-sm font-semibold hover:bg-gray-800"
+            className="w-full bg-black text-white py-2 rounded text-sm font-semibold hover:bg-gray-800 mt-3"
           >
             확인
           </button>
@@ -128,10 +145,10 @@ export default function EditPostPage() {
   if (!post) return null;
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-6 md:py-12">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white border border-gray-200 rounded p-8">
-          <h1 className="text-2xl font-bold mb-6 text-black">글 수정</h1>
+        <div className="bg-white border border-gray-200 rounded p-4 md:p-8">
+          <h1 className="text-xl md:text-2xl font-bold mb-4 md:mb-6 text-black">글 수정</h1>
 
           <div className="space-y-4">
             <div>
@@ -167,10 +184,20 @@ export default function EditPostPage() {
               <input
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded text-sm text-black"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setUpdatePasswordError(false);
+                }}
+                className={`w-full px-4 py-2 border rounded text-sm text-black mb-1 transition-colors ${
+                  updatePasswordError
+                    ? 'border-red-500 focus:outline-none focus:ring-2 focus:ring-red-100 focus:border-red-500'
+                    : 'border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent'
+                }`}
                 placeholder="비밀번호"
               />
+              {updatePasswordError && (
+                <p className="text-red-500 text-xs">비밀번호를 다시 입력해주세요</p>
+              )}
             </div>
 
             <div className="flex gap-4">
@@ -221,7 +248,7 @@ export default function EditPostPage() {
             </div>
           </div>
 
-          <div className="mt-6 flex gap-3">
+          <div className="mt-6 flex flex-col sm:flex-row gap-3">
             <button
               onClick={handleUpdate}
               disabled={submitting}

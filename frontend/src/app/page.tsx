@@ -21,7 +21,8 @@ export default function Home() {
   }, []);
 
   const loadPosts = () => {
-    api.getPosts(1)
+    api
+      .getPosts(1)
       .then((data) => setPosts(data.data || []))
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -32,31 +33,32 @@ export default function Home() {
     loadPosts();
   };
 
+  const filteredPosts = posts.filter((post) =>
+    post.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <main className="container mx-auto px-4 py-12">
       <div className="max-w-5xl mx-auto">
         {/* Page Title */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold mb-2 text-black">Q&A</h1>
-          <div className="w-12 h-1 bg-black mx-auto"></div>
+        <div className="text-center mb-6 md:mb-10">
+          <h1 className="text-3xl md:text-5xl font-bold mb-2 md:mb-3 text-gray-900">Q&A</h1>
+          <p className="text-sm md:text-base text-gray-600">서비스에 대한 질문과 답변</p>
         </div>
 
-        {/* Category Tabs */}
-        <div className="flex justify-center space-x-6 text-sm mb-8 border-b border-gray-200">
-          <button className="pb-3 border-b-2 border-black font-semibold text-black">Q&A</button>
-          <button className="pb-3 text-black hover:text-gray-600">NOTICE</button>
-          <button className="pb-3 text-black hover:text-gray-600">FAQ</button>
-        </div>
-
-        {/* Table */}
-        <div className="bg-white">
+        {/* Table - Desktop */}
+        <div className="hidden md:block bg-white rounded-lg shadow-md overflow-hidden">
           <table className="w-full">
-            <thead>
-              <tr className="border-t-2 border-black border-b">
-                <th className="py-4 px-4 text-left text-sm font-semibold w-16 text-black">No</th>
-                <th className="py-4 px-4 text-left text-sm font-semibold text-black">제목</th>
-                <th className="py-4 px-4 text-center text-sm font-semibold w-32 text-black">글쓴이</th>
-                <th className="py-4 px-4 text-center text-sm font-semibold w-32 text-black">작성시간</th>
+            <thead className="bg-gray-50">
+              <tr className="border-b border-gray-200">
+                <th className="py-4 px-4 text-left text-sm font-semibold w-16 text-gray-700">No</th>
+                <th className="py-4 px-4 text-left text-sm font-semibold text-gray-700">제목</th>
+                <th className="py-4 px-4 text-center text-sm font-semibold w-32 text-gray-700">
+                  글쓴이
+                </th>
+                <th className="py-4 px-4 text-center text-sm font-semibold w-32 text-gray-700">
+                  작성시간
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -66,30 +68,30 @@ export default function Home() {
                     로딩 중...
                   </td>
                 </tr>
-              ) : posts.length === 0 ? (
+              ) : filteredPosts.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="py-12 text-center text-gray-500">
-                    등록된 게시물이 없습니다.
+                    {searchTerm ? '검색 결과가 없습니다.' : '등록된 게시물이 없습니다.'}
                   </td>
                 </tr>
               ) : (
-                posts.map((post, index) => (
+                filteredPosts.map((post, index) => (
                   <tr
                     key={post.id}
-                    className="border-b border-gray-200 hover:bg-gray-50 cursor-pointer"
+                    className="border-b border-gray-100 hover:bg-indigo-50 cursor-pointer transition-colors"
                     onClick={() => router.push(`/posts/${post.id}`)}
                   >
-                    <td className="py-4 px-4 text-sm text-black">{posts.length - index}</td>
+                    <td className="py-4 px-4 text-sm text-gray-600">{filteredPosts.length - index}</td>
                     <td className="py-4 px-4">
                       <div className="flex items-center gap-2">
                         {post.isPrivate && <Lock className="w-4 h-4 text-gray-400" />}
-                        <span className="text-sm text-black">{post.title}</span>
+                        <span className="text-sm text-gray-900 font-medium">{post.title}</span>
                       </div>
                     </td>
-                    <td className="py-4 px-4 text-center text-sm text-black">
+                    <td className="py-4 px-4 text-center text-sm text-gray-600">
                       {post.authorName || 'PLIPOP'}
                     </td>
-                    <td className="py-4 px-4 text-center text-sm text-black">
+                    <td className="py-4 px-4 text-center text-sm text-gray-600">
                       {new Date(post.createdAt).toLocaleDateString('ko-KR')}
                     </td>
                   </tr>
@@ -99,21 +101,62 @@ export default function Home() {
           </table>
         </div>
 
+        {/* Card List - Mobile */}
+        <div className="md:hidden space-y-3">
+          {loading ? (
+            <div className="bg-white rounded-lg shadow-md p-8 text-center text-gray-500">
+              로딩 중...
+            </div>
+          ) : filteredPosts.length === 0 ? (
+            <div className="bg-white rounded-lg shadow-md p-8 text-center text-gray-500">
+              {searchTerm ? '검색 결과가 없습니다.' : '등록된 게시물이 없습니다.'}
+            </div>
+          ) : (
+            filteredPosts.map((post, index) => (
+              <div
+                key={post.id}
+                className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg cursor-pointer transition-shadow"
+                onClick={() => router.push(`/posts/${post.id}`)}
+              >
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-center gap-2 flex-1">
+                    {post.isPrivate && <Lock className="w-4 h-4 text-gray-400 flex-shrink-0" />}
+                    <span className="text-sm text-gray-900 font-medium line-clamp-2">{post.title}</span>
+                  </div>
+                  <span className="text-xs text-gray-400 ml-2 flex-shrink-0">#{filteredPosts.length - index}</span>
+                </div>
+                <div className="flex items-center justify-between text-xs text-gray-500">
+                  <span>{post.authorName || 'PLIPOP'}</span>
+                  <span>{new Date(post.createdAt).toLocaleDateString('ko-KR')}</span>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
         {/* Search & Write Button */}
-        <div className="mt-8 flex justify-between items-center">
-          <div className="flex items-center gap-2 border border-gray-300 rounded-full px-4 py-2 w-80">
+        <div className="mt-6 md:mt-8 flex flex-col sm:flex-row gap-3 sm:justify-between sm:items-center">
+          <div className="relative flex items-center gap-2 bg-white border border-gray-300 rounded-full px-4 py-2.5 w-full sm:w-80 shadow-sm focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-100 transition-all">
+            <Search className="w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search"
+              placeholder="제목으로 검색..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="flex-1 outline-none text-sm text-black placeholder:text-gray-400"
+              className="flex-1 outline-none text-sm text-gray-900 placeholder:text-gray-400"
             />
-            <Search className="w-4 h-4 text-black" />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <span className="text-lg leading-none">×</span>
+              </button>
+            )}
           </div>
           <button
             onClick={() => setShowCreatePost(true)}
-            className="bg-black text-white px-8 py-2 rounded-full text-sm font-semibold hover:bg-gray-800"
+            className="bg-indigo-600 text-white px-8 py-2.5 rounded-full text-sm font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all w-full sm:w-auto"
           >
             글쓰기
           </button>
@@ -123,16 +166,13 @@ export default function Home() {
       {/* Floating Chatbot Button */}
       <button
         onClick={() => setShowChatbot(true)}
-        className="fixed bottom-8 right-8 bg-blue-600 text-white p-4 rounded-full shadow-lg hover:bg-blue-700 z-40"
+        className="fixed bottom-8 right-8 bg-indigo-600 text-white p-4 rounded-full shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:shadow-xl transition-all z-40"
       >
         <MessageCircle className="w-6 h-6" />
       </button>
 
       {showCreatePost && (
-        <CreatePostModal
-          onClose={() => setShowCreatePost(false)}
-          onSuccess={loadPosts}
-        />
+        <CreatePostModal onClose={() => setShowCreatePost(false)} onSuccess={loadPosts} />
       )}
       {showChatbot && <ChatbotModal onClose={handleCloseChatbot} />}
     </main>

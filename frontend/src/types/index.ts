@@ -28,6 +28,7 @@ export interface PostListItem {
   authorName?: string;
   isPrivate: boolean;
   createdAt: string;
+  comments?: Comment[];
 }
 
 export interface Message {

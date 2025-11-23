@@ -56,4 +56,10 @@ export class PostsController {
   update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
     return this.postsService.update(id, updatePostDto);
   }
+
+  @Post('verify-admin')
+  @HttpCode(HttpStatus.OK)
+  verifyAdmin(@Body() body: { adminPassword: string }) {
+    return this.postsService.verifyAdmin(body.adminPassword);
+  }
 }

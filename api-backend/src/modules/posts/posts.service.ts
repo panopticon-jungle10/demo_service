@@ -44,6 +44,7 @@ export class PostsService {
     const skip = (page - 1) * take;
 
     const [posts, total] = await this.postsRepository.findAndCount({
+      relations: ['comments'],
       order: { createdAt: 'DESC' },
       take,
       skip,
@@ -62,6 +63,7 @@ export class PostsService {
           isPrivate: true,
           authorName: maskedName,
           createdAt: post.createdAt,
+          comments: post.comments,
         };
       }
       return {
@@ -75,6 +77,7 @@ export class PostsService {
         isAnonymous: post.isAnonymous,
         createdAt: post.createdAt,
         updatedAt: post.updatedAt,
+        comments: post.comments,
       };
     });
 
@@ -87,7 +90,10 @@ export class PostsService {
   }
 
   async findOne(id: string, password?: string) {
-    const post = await this.postsRepository.findOne({ where: { id } });
+    const post = await this.postsRepository.findOne({
+      where: { id },
+      relations: ['comments'],
+    });
 
     if (!post) {
       throw new NotFoundException('글을 찾을 수 없습니다.');
@@ -114,7 +120,10 @@ export class PostsService {
       throw new UnauthorizedException('관리자 권한이 필요합니다.');
     }
 
-    const post = await this.postsRepository.findOne({ where: { id } });
+    const post = await this.postsRepository.findOne({
+      where: { id },
+      relations: ['comments'],
+    });
 
     if (!post) {
       throw new NotFoundException('글을 찾을 수 없습니다.');
@@ -182,5 +191,13 @@ export class PostsService {
 
   async getAllCount() {
     return await this.postsRepository.count();
+  }
+
+  async verifyAdmin(adminPassword: string) {
+    const envAdminPassword = process.env.ADMIN_PASSWORD;
+    if (!envAdminPassword || adminPassword !== envAdminPassword) {
+      throw new UnauthorizedException('관리자 권한이 필요합니다.');
+    }
+    return { message: '인증되었습니다.' };
   }
 }
