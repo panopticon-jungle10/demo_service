@@ -90,11 +90,6 @@ async def chat(request: ChatRequest):
     """
 
     logger.info(f"Full request data: {request.model_dump()}")
-    logger.info(
-        f"Received chat request: conversationId={request.conversationId}, wantsToPost={request.wantsToPost}"
-    )
-    if request.postData:
-        logger.info(f"PostData: {request.postData.model_dump()}")
 
     # Step 1: Generate AI answer
     try:

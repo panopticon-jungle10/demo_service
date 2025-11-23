@@ -28,16 +28,16 @@ app = FastAPI(
 )
 
 # Initialize Panopticon Monitoring SDK
-# MonitoringSDK.init(
-#     app,
-#     {
-#         "api_key": "dkdkdkdk",
-#         "service_name": "llm-backend",
-#         "log_endpoint": os.getenv("PANOPTICON_LOG_URL"),
-#         "trace_endpoint": os.getenv("PANOPTICON_TRACE_URL"),
-#         "environment": "development",
-#     },
-# )
+MonitoringSDK.init(
+    app,
+    {
+        "api_key": "dkdkdkdk",
+        "service_name": "llm-backend",
+        "log_endpoint": os.getenv("PANOPTICON_LOG_URL"),
+        "trace_endpoint": os.getenv("PANOPTICON_TRACE_URL"),
+        "environment": "development",
+    },
+)
 
 
 @app.exception_handler(RequestValidationError)

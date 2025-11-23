@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class APIBackendService:
     def __init__(self):
         self.base_url = os.getenv("API_BACKEND_URL", "http://localhost:3001")
-        self.admin_password = os.getenv("ADMIN_PASSWORD", "")
+        self.admin_password = os.getenv("ADMIN_PASSWORD", "panopticon")
         self.timeout = 30.0
 
     async def create_post(
@@ -20,7 +20,7 @@ class APIBackendService:
         is_anonymous: bool,
         is_private: bool,
         author_name: Optional[str] = None,
-        email: Optional[str] = None
+        email: Optional[str] = None,
     ) -> Optional[Dict[str, Any]]:
         """
         Create a post in API Backend
@@ -41,10 +41,7 @@ class APIBackendService:
                 if email:
                     payload["email"] = email
 
-                response = await client.post(
-                    f"{self.base_url}/posts",
-                    json=payload
-                )
+                response = await client.post(f"{self.base_url}/posts", json=payload)
 
                 if response.status_code in [200, 201]:
                     data = response.json()
@@ -52,10 +49,12 @@ class APIBackendService:
                     return {
                         "id": data.get("id"),  # UUID for comment creation
                         "postId": data.get("postId"),  # Display number for user
-                        "message": data.get("message", "글이 작성되었습니다")
+                        "message": data.get("message", "글이 작성되었습니다"),
                     }
                 else:
-                    logger.error(f"Failed to create post: {response.status_code} - {response.text}")
+                    logger.error(
+                        f"Failed to create post: {response.status_code} - {response.text}"
+                    )
                     return None
 
         except Exception as e:
@@ -63,10 +62,7 @@ class APIBackendService:
             return None
 
     async def create_comment(
-        self,
-        post_id: str,
-        content: str,
-        is_ai_generated: bool = True
+        self, post_id: str, content: str, is_ai_generated: bool = True
     ) -> bool:
         """
         Create a comment on a post
@@ -77,18 +73,19 @@ class APIBackendService:
                 payload = {
                     "content": content,
                     "adminPassword": self.admin_password,
-                    "isAiGenerated": is_ai_generated
+                    "isAiGenerated": is_ai_generated,
                 }
 
                 response = await client.post(
-                    f"{self.base_url}/posts/{post_id}/comments",
-                    json=payload
+                    f"{self.base_url}/posts/{post_id}/comments", json=payload
                 )
 
                 if response.status_code in [200, 201]:
                     return True
                 else:
-                    logger.error(f"Failed to create comment: {response.status_code} - {response.text}")
+                    logger.error(
+                        f"Failed to create comment: {response.status_code} - {response.text}"
+                    )
                     return False
 
         except Exception as e:
