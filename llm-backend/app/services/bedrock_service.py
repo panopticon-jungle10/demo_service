@@ -39,7 +39,7 @@ class BedrockService:
                     aws_access_key_id=aws_access_key,
                     aws_secret_access_key=aws_secret_key,
                 )
-                logger.log(
+                logger.info(
                     f"베드락 client initialized with credentials from environment variables (region: {self.region})"
                 )
             except Exception as e:

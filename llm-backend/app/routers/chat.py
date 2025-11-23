@@ -77,6 +77,7 @@ def get_field_metadata():
 
 @router.get("/llm")
 def l_ch():
+    logger.info("hello")
     return "welcome to LLM backend"
 
 
