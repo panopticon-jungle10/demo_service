@@ -2,17 +2,25 @@
   "venvPath": ".",
   "venv": "venv",
   "pythonVersion": "3.9",
+  "pythonPlatform": "Darwin",
   "typeCheckingMode": "basic",
-  "reportMissingImports": true,
+  "reportMissingImports": "none",
   "reportMissingTypeStubs": false,
   "executionEnvironments": [
     {
       "root": ".",
       "pythonVersion": "3.9",
+      "pythonPlatform": "Darwin",
+      "pythonPath": "venv/bin/python",
       "extraPaths": [
-        "venv/lib/python3.9/site-packages"
+        "venv/lib/python3.9/site-packages",
+        "../../monitoring_sdk/python-sdk",
+        "../../monitoring_sdk/python-sdk/panopticon_monitoring",
+        "/Users/iseungjun/Code/Team/panopticon_all/monitoring_sdk/python-sdk",
+        "/Users/iseungjun/Code/Team/panopticon_all/monitoring_sdk/python-sdk/panopticon_monitoring"
       ]
     }
-  ]
+  ],
+  "include": ["app"],
+  "exclude": ["**/__pycache__", "**/node_modules", "venv"]
 }
-

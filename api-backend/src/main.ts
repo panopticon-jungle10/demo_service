@@ -26,11 +26,11 @@ async function bootstrap() {
   // Monitoring SDK 초기화 - 실제 winston logger 인스턴스 전달
   const sdk = MonitoringSDK.init(app, {
     apiKey: process.env.SDK_API_KEY || 'demo-service-api-key',
-    endpoint: 'http://localhost:3005/producer',
-    logEndpoint: 'http://localhost:3005/producer/sdk/logs',
-    traceEndpoint: 'http://localhost:3005/producer/sdk/traces',
-    serviceName: 'demo-service-api',
-    environment: process.env.NODE_ENV || 'development',
+    endpoint: process.env.SDK_ENDPOINT || 'http://localhost:3005/producer',
+    logEndpoint: process.env.SDK_LOG_ENDPOINT || 'http://localhost:3005/producer/sdk/logs',
+    traceEndpoint: process.env.SDK_TRACE_ENDPOINT || 'http://localhost:3005/producer/sdk/traces',
+    serviceName: process.env.SDK_SERVICE_NAME || 'demo-service-api',
+    environment: process.env.SDK_ENV || 'development',
     logger: actualWinstonLogger, // NestJS wrapper가 실제로 사용하는 winston 인스턴스
   });
 

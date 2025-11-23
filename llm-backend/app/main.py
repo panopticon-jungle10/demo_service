@@ -7,6 +7,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from app.routers import chat
+
 from panopticon_monitoring import MonitoringSDK
 
 # Load environment variables from project root
@@ -31,11 +32,12 @@ app = FastAPI(
 MonitoringSDK.init(
     app,
     {
-        "api_key": "dkdkdkdk",
-        "service_name": "llm-backend",
+        "api_key": os.getenv("PANOPTICON_API_KEY"),
+        "service_name": os.getenv("PANOPTICON_SERVICE_NAME"),
+        "endpoint": os.getenv("PANOPTICON_ENDPOINT"),
         "log_endpoint": os.getenv("PANOPTICON_LOG_URL"),
         "trace_endpoint": os.getenv("PANOPTICON_TRACE_URL"),
-        "environment": "development",
+        "environment": os.getenv("PANOPTICON_ENV"),
     },
 )
 
