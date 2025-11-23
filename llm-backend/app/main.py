@@ -7,6 +7,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from app.routers import chat
+from panopticon_monitoring import MonitoringSDK
 
 # Load environment variables from project root
 
@@ -24,6 +25,18 @@ app = FastAPI(
     title="LLM Backend",
     description="AWS Bedrock Claude 3 Sonnet Q&A API with Auto-posting",
     version="1.0.0",
+)
+
+# Initialize Panopticon Monitoring SDK
+MonitoringSDK.init(
+    app,
+    {
+        "api_key": "dkdkdkdk",
+        "service_name": "llm-backend",
+        "log_endpoint": os.getenv("PANOPTICON_LOG_URL"),
+        "trace_endpoint": os.getenv("PANOPTICON_TRACE_URL"),
+        "environment": "development",
+    },
 )
 
 
@@ -62,6 +75,21 @@ async def health_check():
         "status": "ok",
         "message": "LLM Backend is running",
         "model": "Claude 3 Sonnet (AWS Bedrock)",
+    }
+
+
+@app.get("/test-logs")
+async def test_logs():
+    """로그 테스트 엔드포인트 - 다양한 레벨의 로그를 생성합니다"""
+    logger.info("📝 INFO 레벨 로그 테스트")
+    logger.warning("⚠️  WARNING 레벨 로그 테스트")
+    logger.error("❌ ERROR 레벨 로그 테스트")
+    logger.info(f"요청 처리 완료: trace_id 포함된 로그")
+
+    return {
+        "status": "ok",
+        "message": "로그 테스트 완료! Panopticon Producer에서 확인하세요.",
+        "logs_sent": ["INFO", "WARNING", "ERROR"]
     }
 
 
