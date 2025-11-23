@@ -40,7 +40,7 @@ async function bootstrap() {
   dataSource.logger = sdk.getDbLogger();
   console.log('[main.ts] DB logger set to SDK logger');
 
-  const port = process.env.PORT || 3001;
+  const port = process.env.PORT || 3000;
   await app.listen(port);
   console.log(`API Backend is running on: http://localhost:${port}`);
 }

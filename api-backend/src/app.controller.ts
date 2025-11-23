@@ -10,10 +10,6 @@ export class AppController {
 
   @Get()
   getHealth(): { status: string; message: string } {
-    this.logger.log('GET / endpoint called', AppController.name);
-    this.logger.warn('This is a warning message', AppController.name);
-    this.logger.error('This is an error message', '', AppController.name);
-
     return {
       status: 'ok bto',
       message: 'API Backend is running',

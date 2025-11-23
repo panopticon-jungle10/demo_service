@@ -16,7 +16,7 @@ class BedrockService:
     def __init__(self):
         self.region = os.getenv("AWS_REGION", "ap-northeast-2")
         self.model_id = os.getenv(
-            "AWS_MODEL_ID", "anthropic.claude-3-sonnet-20240229-v1:0"
+            "AWS_MODEL_ID", "anthropic.claude-3-haiku-20240307-v1:0"
         )
         self.use_mock = os.getenv("USE_MOCK_AI", "false").lower() == "true"
 
@@ -39,7 +39,7 @@ class BedrockService:
                     aws_access_key_id=aws_access_key,
                     aws_secret_access_key=aws_secret_key,
                 )
-                logger.info(
+                logger.log(
                     f"베드락 client initialized with credentials from environment variables (region: {self.region})"
                 )
             except Exception as e:
