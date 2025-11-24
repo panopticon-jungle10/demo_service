@@ -77,6 +77,7 @@ def get_field_metadata():
 
 @router.get("/llm")
 def l_ch():
+    logger.info("hello")
     return "welcome to LLM backend"
 
 
@@ -90,20 +91,15 @@ async def chat(request: ChatRequest):
     """
 
     logger.info(f"Full request data: {request.model_dump()}")
-    logger.info(
-        f"Received chat request: conversationId={request.conversationId}, wantsToPost={request.wantsToPost}"
-    )
-    if request.postData:
-        logger.info(f"PostData: {request.postData.model_dump()}")
 
     # Step 1: Generate AI answer
     try:
-        ai_answer = await bedrock_service.generate_answer(request.originalQuestion)
+        ai_answer = await bedrock_service.generate_answer(
+            request.originalQuestion, is_error=request.isError
+        )
     except Exception as e:
         logger.error(f"Bedrock failed: {e}")
-        raise HTTPException(
-            status_code=502, detail="일시적인 오류가 발생했습니다. 다시 질문해주세요"
-        )
+        raise HTTPException(status_code=502, detail=str(e))
 
     response_data = {
         "reply": ai_answer,

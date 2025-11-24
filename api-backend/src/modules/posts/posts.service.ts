@@ -3,6 +3,8 @@ import {
   NotFoundException,
   UnauthorizedException,
   BadRequestException,
+  LoggerService,
+  Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -10,12 +12,15 @@ import * as bcrypt from 'bcrypt';
 import { Post } from './post.entity';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 
 @Injectable()
 export class PostsService {
   constructor(
     @InjectRepository(Post)
     private postsRepository: Repository<Post>,
+    @Inject(WINSTON_MODULE_PROVIDER)
+    private readonly logger: LoggerService,
   ) {}
 
   async create(createPostDto: CreatePostDto) {
@@ -42,6 +47,8 @@ export class PostsService {
   async findAll(page: number = 1) {
     const take = 20;
     const skip = (page - 1) * take;
+
+    this.logger.error('findall 에러닷');
 
     const [posts, total] = await this.postsRepository.findAndCount({
       relations: ['comments'],

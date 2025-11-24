@@ -30,6 +30,7 @@ class ChatRequest(BaseModel):
     originalQuestion: str = Field(..., min_length=1)
     wantsToPost: bool
     postData: Optional[PostData] = None
+    isError: bool = False  # 에러 시나리오 시연용 (기본값: False)
 
     @model_validator(mode='after')
     def validate_post_data_required(self):

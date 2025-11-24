@@ -6,7 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
-from app.routers import chat
+from app.routers import chat, analytics
+
+from panopticon_monitoring import MonitoringSDK
 
 # Load environment variables from project root
 
@@ -24,6 +26,19 @@ app = FastAPI(
     title="LLM Backend",
     description="AWS Bedrock Claude 3 Sonnet Q&A API with Auto-posting",
     version="1.0.0",
+)
+
+# Initialize Panopticon Monitoring SDK
+MonitoringSDK.init(
+    app,
+    {
+        "api_key": os.getenv("PANOPTICON_API_KEY"),
+        "service_name": os.getenv("PANOPTICON_SERVICE_NAME"),
+        "endpoint": os.getenv("PANOPTICON_ENDPOINT"),
+        "log_endpoint": os.getenv("PANOPTICON_LOG_URL"),
+        "trace_endpoint": os.getenv("PANOPTICON_TRACE_URL"),
+        "environment": os.getenv("PANOPTICON_ENV"),
+    },
 )
 
 
@@ -54,6 +69,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(chat.router, tags=["chat"])
+app.include_router(analytics.router, tags=["analytics"])
 
 
 @app.get("/health")
@@ -62,6 +78,17 @@ async def health_check():
         "status": "ok",
         "message": "LLM Backend is running",
         "model": "Claude 3 Sonnet (AWS Bedrock)",
+    }
+
+
+@app.get("/test-logs")
+async def test_logs():
+    """로그 테스트 엔드포인트 - 다양한 레벨의 로그를 생성합니다"""
+
+    return {
+        "status": "ok",
+        "message": "로그 테스트 완료! Panopticon Producer에서 확인하세요.",
+        "logs_sent": ["INFO", "WARNING", "ERROR"],
     }
 
 
