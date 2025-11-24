@@ -21,7 +21,7 @@ import { CommentsModule } from './modules/comments/comments.module';
       database: process.env.DATABASE_NAME || 'demo_service',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       ...(process.env.NODE_ENV === 'production' && { ssl: { rejectUnauthorized: false } }),
-      synchronize: process.env.NODE_ENV === 'production' ? true : false,
+      synchronize: process.env.NODE_ENV === 'production' ? false : true,
       logging: true,
       maxQueryExecutionTime: 1, // 1ms 이상 걸리는 쿼리를 logQuerySlow로 전달 (거의 모든 쿼리)
     }),

@@ -40,6 +40,12 @@ async function bootstrap() {
   dataSource.logger = sdk.getDbLogger();
   console.log('[main.ts] DB logger set to SDK logger');
 
+  if (process.env.RESET_NOW === 'true') {
+    console.log('[DB RESET] Dropping + synchronizing schema...');
+    await dataSource.synchronize(true); // <-- 이 한 줄로 전체 초기화됨
+    console.log('[DB RESET] Done.');
+  }
+
   const port = process.env.PORT || 3001;
   await app.listen(port);
   console.log(`API Backend is running on: http://localhost:${port}`);
