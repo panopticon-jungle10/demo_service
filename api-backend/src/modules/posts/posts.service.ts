@@ -48,8 +48,6 @@ export class PostsService {
     const take = 20;
     const skip = (page - 1) * take;
 
-    this.logger.error('findall 에러닷');
-
     const [posts, total] = await this.postsRepository.findAndCount({
       relations: ['comments'],
       order: { createdAt: 'DESC' },

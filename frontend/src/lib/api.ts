@@ -115,6 +115,55 @@ export const api = {
     return res.json();
   },
 
+  async chatAsk(data: { conversationId: string; originalQuestion: string; isError?: boolean }, traceHeaders?: { traceId?: string; spanId?: string }) {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+
+    // 첫 번째 요청이거나 trace header가 없는 경우
+    if (traceHeaders?.traceId && traceHeaders?.spanId) {
+      headers['X-Trace-Id'] = traceHeaders.traceId;
+      headers['X-Span-Id'] = traceHeaders.spanId;
+    }
+
+    const res = await fetch(`${LLM_URL}/chat/ask`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error('Failed to ask AI');
+
+    const responseData = await res.json();
+
+    // 응답 헤더에서 trace context 가져오기
+    const responseTraceId = res.headers.get('X-Trace-Id');
+    const responseSpanId = res.headers.get('X-Span-Id');
+
+    return {
+      ...responseData,
+      _traceContext: {
+        traceId: responseTraceId,
+        spanId: responseSpanId,
+      },
+    };
+  },
+
+  async chatPost(data: { conversationId: string; originalQuestion: string; postData: any }, traceHeaders?: { traceId?: string; spanId?: string }) {
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+
+    // 이전 요청에서 받은 trace header 전달
+    if (traceHeaders?.traceId && traceHeaders?.spanId) {
+      headers['X-Trace-Id'] = traceHeaders.traceId;
+      headers['X-Span-Id'] = traceHeaders.spanId;
+    }
+
+    const res = await fetch(`${LLM_URL}/chat/post`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(data),
+    });
+    if (!res.ok) throw new Error('Failed to create post');
+    return res.json();
+  },
+
   async verifyAdmin(adminPassword: string) {
     const res = await fetch(`${API_URL}/posts/verify-admin`, {
       method: 'POST',

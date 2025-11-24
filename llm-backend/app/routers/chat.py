@@ -1,6 +1,6 @@
 import logging
 from fastapi import APIRouter, HTTPException
-from app.models.schemas import ChatRequest, ChatResponse, FieldMetadata
+from app.models.schemas import ChatRequest, ChatResponse, FieldMetadata, AskRequest, AskResponse, PostRequest, PostResponse
 from app.services.bedrock_service import BedrockService
 from app.services.api_backend_service import APIBackendService
 
@@ -9,6 +9,9 @@ router = APIRouter()
 
 bedrock_service = BedrockService()
 api_backend_service = APIBackendService()
+
+# In-memory cache for AI answers (conversationId → AI answer)
+ai_answer_cache = {}
 
 
 def get_field_metadata():
@@ -156,3 +159,96 @@ async def chat(request: ChatRequest):
         response_data["reply"] = reply_message
 
     return ChatResponse(**response_data)
+
+
+@router.post("/llm/chat/ask", response_model=AskResponse)
+async def ask(request: AskRequest):
+    """
+    Step 1: Generate AI answer only
+    - Generate AI answer via Bedrock
+    - Cache the answer with conversationId
+    - Return answer for display
+    """
+    logger.info(f"Ask request: conversationId={request.conversationId}, question={request.originalQuestion[:50]}...")
+
+    # Generate AI answer
+    try:
+        ai_answer = await bedrock_service.generate_answer(
+            request.originalQuestion, is_error=request.isError
+        )
+    except Exception as e:
+        logger.error(f"Bedrock failed: {e}")
+        raise HTTPException(status_code=502, detail=str(e))
+
+    # Cache the answer
+    ai_answer_cache[request.conversationId] = ai_answer
+    logger.info(f"Cached AI answer for conversationId={request.conversationId}")
+
+    return AskResponse(
+        conversationId=request.conversationId,
+        aiAnswer=ai_answer,
+        reply=ai_answer,
+    )
+
+
+@router.post("/llm/chat/post", response_model=PostResponse)
+async def post(request: PostRequest):
+    """
+    Step 2: Create post with cached AI answer
+    - Retrieve cached AI answer (or regenerate if not found)
+    - Create post
+    - Create AI comment automatically
+    """
+    logger.info(f"Post request: conversationId={request.conversationId}")
+
+    # Retrieve cached AI answer
+    ai_answer = ai_answer_cache.get(request.conversationId)
+
+    if not ai_answer:
+        logger.warning(f"No cached answer for conversationId={request.conversationId}, regenerating...")
+        try:
+            ai_answer = await bedrock_service.generate_answer(request.originalQuestion)
+        except Exception as e:
+            logger.error(f"Bedrock failed: {e}")
+            raise HTTPException(status_code=502, detail=str(e))
+
+    # Create post
+    post_result = await api_backend_service.create_post(
+        title=request.postData.title,
+        content=request.originalQuestion,
+        password=request.postData.password,
+        is_anonymous=request.postData.isAnonymous,
+        is_private=request.postData.isPrivate,
+        author_name=request.postData.authorName,
+        email=request.postData.email,
+    )
+
+    if not post_result:
+        logger.error("Failed to create post")
+        raise HTTPException(
+            status_code=502,
+            detail="글 작성 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요",
+        )
+
+    # Auto-create AI comment
+    comment_success = await api_backend_service.create_comment(
+        post_id=post_result["id"], content=ai_answer, is_ai_generated=True
+    )
+
+    # Build response message
+    reply_message = f"글이 생성되었습니다. 글 번호: {post_result['postId']}"
+    if comment_success:
+        reply_message += "\nAI 답변이 댓글로 등록되었습니다."
+
+    # Clean up cache
+    if request.conversationId in ai_answer_cache:
+        del ai_answer_cache[request.conversationId]
+        logger.info(f"Cleaned up cache for conversationId={request.conversationId}")
+
+    return PostResponse(
+        reply=reply_message,
+        aiAnswer=ai_answer,
+        postCreated=post_result,
+        commentCreated=comment_success,
+        commentError="댓글 작성에 실패했습니다" if not comment_success else None,
+    )
