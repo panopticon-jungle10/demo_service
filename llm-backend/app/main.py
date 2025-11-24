@@ -84,10 +84,6 @@ async def health_check():
 @app.get("/test-logs")
 async def test_logs():
     """로그 테스트 엔드포인트 - 다양한 레벨의 로그를 생성합니다"""
-    logger.info("📝 INFO 레벨 로그 테스트")
-    logger.warning("⚠️  WARNING 레벨 로그 테스트")
-    logger.error("❌ ERROR 레벨 로그 테스트")
-    logger.info(f"요청 처리 완료: trace_id 포함된 로그")
 
     return {
         "status": "ok",

@@ -1,6 +1,7 @@
 """
 분석 엔드포인트 - 트레이스 시연용
 """
+
 import logging
 from fastapi import APIRouter, HTTPException, Query
 from app.services.analytics_service import AnalyticsService
@@ -11,10 +12,12 @@ router = APIRouter()
 analytics_service = AnalyticsService()
 
 
-@router.post("/analytics/track")
+@router.post("/llm/analytics/track")
 async def track_user_behavior(
     user_id: str = Query(..., description="사용자 ID"),
-    action: str = Query(..., description="수행한 액션 (예: 'view_post', 'create_comment')"),
+    action: str = Query(
+        ..., description="수행한 액션 (예: 'view_post', 'create_comment')"
+    ),
 ):
     """
     사용자 행동 추적 엔드포인트
@@ -37,7 +40,7 @@ async def track_user_behavior(
         raise HTTPException(status_code=500, detail="행동 추적 중 오류가 발생했습니다.")
 
 
-@router.get("/analytics/recommendations/{user_id}")
+@router.get("/llm/analytics/recommendations/{user_id}")
 async def get_recommendations(user_id: str):
     """
     AI 추천 조회 엔드포인트
@@ -63,7 +66,7 @@ async def get_recommendations(user_id: str):
         raise HTTPException(status_code=500, detail="추천 조회 중 오류가 발생했습니다.")
 
 
-@router.get("/analytics/metrics/{service_name}")
+@router.get("/llm/analytics/metrics/{service_name}")
 async def get_service_metrics(service_name: str):
     """
     서비스 메트릭 조회 엔드포인트
@@ -86,4 +89,6 @@ async def get_service_metrics(service_name: str):
         }
     except Exception as e:
         logger.error(f"메트릭 조회 실패: {e}")
-        raise HTTPException(status_code=500, detail="메트릭 조회 중 오류가 발생했습니다.")
+        raise HTTPException(
+            status_code=500, detail="메트릭 조회 중 오류가 발생했습니다."
+        )
