@@ -3,10 +3,10 @@ Locust 부하 테스트 - 정상 트래픽 시뮬레이션
 자연스러운 사용자 흐름을 시뮬레이션합니다.
 
 엔드포인트 비율:
-- POST /llm/chat: 50% (이 중 30%는 글 작성, 70%는 글 작성 안함)
-- POST /llm/analytics/track: 18.75%
-- GET /llm/analytics/recommendations/{user_id}: 18.75%
-- GET /llm/analytics/metrics/{service_name}: 12.5%
+- POST /llm/chat: 50% (비율 8/16, 이 중 30%는 글 작성, 70%는 글 작성 안함)
+- POST /llm/analytics/track: 18.75% (비율 3/16)
+- GET /llm/analytics/recommendations/{user_id}: 18.75% (비율 3/16)
+- GET /llm/analytics/metrics/{service_name}: 12.5% (비율 2/16)
 """
 
 import random
@@ -60,10 +60,10 @@ class NormalTrafficUser(HttpUser):
             "filter_posts"
         ]
 
-    @task(4)
+    @task(8)
     def chat_request(self):
         """
-        POST /llm/chat 엔드포인트 호출 (비율: 4)
+        POST /llm/chat 엔드포인트 호출 (비율: 8)
         30%는 글 작성, 70%는 글 작성 안함
         """
         question = random.choice(self.questions)
@@ -99,10 +99,10 @@ class NormalTrafficUser(HttpUser):
             else:
                 response.failure(f"Failed with status {response.status_code}")
 
-    @task(1.5)
+    @task(3)
     def track_user_behavior(self):
         """
-        POST /llm/analytics/track 엔드포인트 호출 (비율: 1.5)
+        POST /llm/analytics/track 엔드포인트 호출 (비율: 3)
         사용자 행동 추적
         """
         action = random.choice(self.user_actions)
@@ -117,10 +117,10 @@ class NormalTrafficUser(HttpUser):
             else:
                 response.failure(f"Failed with status {response.status_code}")
 
-    @task(1.5)
+    @task(3)
     def get_recommendations(self):
         """
-        GET /llm/analytics/recommendations/{user_id} 엔드포인트 호출 (비율: 1.5)
+        GET /llm/analytics/recommendations/{user_id} 엔드포인트 호출 (비율: 3)
         AI 추천 조회
         """
         with self.client.get(
@@ -133,10 +133,10 @@ class NormalTrafficUser(HttpUser):
             else:
                 response.failure(f"Failed with status {response.status_code}")
 
-    @task(1)
+    @task(2)
     def get_service_metrics(self):
         """
-        GET /llm/analytics/metrics/{service_name} 엔드포인트 호출 (비율: 1)
+        GET /llm/analytics/metrics/{service_name} 엔드포인트 호출 (비율: 2)
         서비스 메트릭 조회
         """
         service_name = random.choice(self.service_names)
