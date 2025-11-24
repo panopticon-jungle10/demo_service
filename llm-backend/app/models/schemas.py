@@ -61,3 +61,30 @@ class ChatResponse(BaseModel):
     commentError: Optional[str] = None
     nextStep: str = "completed"
     meta: Dict[str, List[Dict[str, Any]]]
+
+
+# New schemas for split endpoints
+class AskRequest(BaseModel):
+    conversationId: str
+    originalQuestion: str = Field(..., min_length=1)
+    isError: bool = False  # 에러 시나리오 시연용
+
+
+class AskResponse(BaseModel):
+    conversationId: str
+    aiAnswer: str
+    reply: str
+
+
+class PostRequest(BaseModel):
+    conversationId: str
+    originalQuestion: str
+    postData: PostData
+
+
+class PostResponse(BaseModel):
+    reply: str
+    aiAnswer: str
+    postCreated: Optional[PostCreatedResponse] = None
+    commentCreated: bool = False
+    commentError: Optional[str] = None

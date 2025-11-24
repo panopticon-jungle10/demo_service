@@ -1,22 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { api } from "@/lib/api";
-import { X } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 
 interface ChatbotModalProps {
   onClose: () => void;
 }
 
-type Step = "question" | "ai_answer" | "post_form";
+type Step = "question" | "ai_loading" | "ai_answer" | "post_form" | "post_submitted";
 
 export default function ChatbotModal({ onClose }: ChatbotModalProps) {
   const [conversationId] = useState(uuidv4());
   const [step, setStep] = useState<Step>("question");
   const [question, setQuestion] = useState("");
   const [aiAnswer, setAiAnswer] = useState("");
-  const [wantsToPost, setWantsToPost] = useState(false);
   const [title, setTitle] = useState("");
   const [password, setPassword] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(true);
@@ -24,42 +23,58 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
   const [authorName, setAuthorName] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [postLoading, setPostLoading] = useState(false);
+  const [postResult, setPostResult] = useState<string | null>(null);
+  const [traceContext, setTraceContext] = useState<{ traceId?: string; spanId?: string }>({});
 
+  // AI 요청 처리
   const handleSubmitQuestion = async () => {
     if (!question.trim()) return;
-    setLoading(true);
+    setAiLoading(true);
+    setStep("ai_loading");
 
     try {
-      const response = await api.chat({
+      const response = await api.chatAsk({
         conversationId,
         originalQuestion: question,
-        wantsToPost: false,
       });
 
+      // Trace context 저장
+      if (response._traceContext) {
+        setTraceContext(response._traceContext);
+      }
+
       setAiAnswer(response.aiAnswer);
-      setStep("ai_answer");
+
+      // 글작성이 먼저 완료된 경우 자동으로 댓글 등록
+      if (step === "post_submitted") {
+        // Do nothing - post already submitted
+      } else {
+        setStep("ai_answer");
+      }
     } catch (error: any) {
       console.error("Chat error:", error);
       setAiAnswer("챗봇: 오류입니다. AI 서비스가 현재 이용 불가능합니다.");
       setStep("ai_answer");
     } finally {
-      setLoading(false);
+      setAiLoading(false);
     }
   };
 
+  // 글작성 처리
   const handleFinalSubmit = async () => {
     if (!authorName.trim()) {
       alert("이름은 필수입니다");
       return;
     }
 
-    setLoading(true);
+    setPostLoading(true);
 
     try {
-      const response = await api.chat({
+      const response = await api.chatPost({
         conversationId,
         originalQuestion: question,
-        wantsToPost: true,
         postData: {
           title,
           password,
@@ -68,17 +83,35 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
           isPrivate,
           email: email || undefined,
         },
-      });
+      }, traceContext);
 
-      alert(response.reply);
-      onClose();
+      setPostResult(response.reply);
+      setStep("post_submitted");
+
+      // AI 답변이 아직 로딩 중이면 메시지 표시
+      if (aiLoading) {
+        alert("글이 생성되었습니다. AI 답변이 완료되면 자동으로 댓글로 등록됩니다.");
+      } else {
+        alert(response.reply);
+        onClose();
+      }
     } catch (error: any) {
       console.error("Submit error:", error);
       alert("글 작성 중 오류가 발생했습니다");
     } finally {
-      setLoading(false);
+      setPostLoading(false);
     }
   };
+
+  // 글작성이 먼저 완료되고 AI가 나중에 완료된 경우 모달 닫기
+  useEffect(() => {
+    if (step === "post_submitted" && !aiLoading && aiAnswer) {
+      setTimeout(() => {
+        alert(`${postResult}\nAI 답변이 댓글로 등록되었습니다.`);
+        onClose();
+      }, 500);
+    }
+  }, [step, aiLoading, aiAnswer, postResult, onClose]);
 
   return (
     <div className="fixed bottom-4 sm:bottom-24 right-4 sm:right-8 z-50 w-full sm:w-[400px] max-w-[calc(100vw-2rem)] sm:max-w-[400px]">
@@ -94,7 +127,6 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
         </div>
 
         <div className="flex-1 overflow-y-auto p-6">
-
           {step === "question" && (
             <div>
               <label className="block mb-3 font-semibold text-gray-700 text-sm">
@@ -114,6 +146,28 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
               >
                 {loading ? "처리 중..." : "질문하기"}
               </button>
+            </div>
+          )}
+
+          {step === "ai_loading" && (
+            <div>
+              <div className="flex flex-col items-center justify-center py-12">
+                <Loader2 className="w-12 h-12 animate-spin text-indigo-600 mb-4" />
+                <p className="text-gray-700 font-semibold mb-2">AI가 답변을 생성하고 있습니다...</p>
+                <p className="text-sm text-gray-500 mb-8">잠시만 기다려 주세요</p>
+              </div>
+
+              <div className="border-t pt-6">
+                <h3 className="text-base font-semibold mb-4 text-gray-900">
+                  AI 답변을 기다리는 동안 글을 작성하시겠습니까?
+                </h3>
+                <button
+                  onClick={() => setStep("post_form")}
+                  className="w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 font-semibold transition-colors text-sm"
+                >
+                  글작성 시작
+                </button>
+              </div>
             </div>
           )}
 
@@ -144,9 +198,18 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
           {step === "post_form" && (
             <div>
-              <div className="bg-indigo-50 border border-indigo-100 p-4 rounded-lg mb-4">
-                <p className="whitespace-pre-wrap text-gray-900 leading-relaxed text-sm">{aiAnswer}</p>
-              </div>
+              {aiLoading && (
+                <div className="bg-yellow-50 border border-yellow-200 p-3 rounded-lg mb-4 flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin text-yellow-600" />
+                  <p className="text-sm text-yellow-800">AI 답변이 생성되는 중입니다...</p>
+                </div>
+              )}
+
+              {aiAnswer && !aiLoading && (
+                <div className="bg-indigo-50 border border-indigo-100 p-4 rounded-lg mb-4">
+                  <p className="whitespace-pre-wrap text-gray-900 leading-relaxed text-sm">{aiAnswer}</p>
+                </div>
+              )}
 
               <h3 className="text-base font-semibold mb-4 text-gray-900">글로 작성하기</h3>
 
@@ -218,12 +281,26 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
                 <button
                   onClick={handleFinalSubmit}
-                  disabled={loading || !title.trim() || !password.trim() || !authorName.trim()}
-                  className="w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 font-semibold transition-colors text-sm"
+                  disabled={postLoading || !title.trim() || !password.trim() || !authorName.trim()}
+                  className="w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 font-semibold transition-colors text-sm flex items-center justify-center gap-2"
                 >
-                  {loading ? "제출 중..." : "글 작성하기"}
+                  {postLoading && <Loader2 className="w-4 h-4 animate-spin" />}
+                  {postLoading ? "제출 중..." : "글 작성하기"}
                 </button>
               </div>
+            </div>
+          )}
+
+          {step === "post_submitted" && aiLoading && (
+            <div className="flex flex-col items-center justify-center py-12">
+              <div className="bg-green-50 border border-green-200 p-4 rounded-lg mb-6 w-full">
+                <p className="text-green-800 font-semibold text-sm">✓ 글이 성공적으로 생성되었습니다!</p>
+                <p className="text-green-700 text-xs mt-1">{postResult}</p>
+              </div>
+
+              <Loader2 className="w-12 h-12 animate-spin text-indigo-600 mb-4" />
+              <p className="text-gray-700 font-semibold mb-2">AI 답변을 댓글로 등록 중...</p>
+              <p className="text-sm text-gray-500">잠시만 기다려 주세요</p>
             </div>
           )}
         </div>

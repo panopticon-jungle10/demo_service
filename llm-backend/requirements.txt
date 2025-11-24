@@ -27,7 +27,7 @@ mdurl==0.1.2
 more-itertools==10.8.0
 nh3==0.3.2
 packaging==25.0
-panopticon-monitoring==0.1.2
+panopticon-monitoring==0.1.3
 pydantic==2.5.0
 pydantic-settings==2.1.0
 pydantic_core==2.14.1
