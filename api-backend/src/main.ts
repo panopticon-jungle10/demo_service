@@ -3,6 +3,7 @@ import { WINSTON_MODULE_NEST_PROVIDER } from 'nest-winston';
 import { AppModule } from './app.module';
 import { DataSource } from 'typeorm';
 import { MonitoringSDK } from '@panopticon/nestjs-monitoring-sdk';
+import { HttpLoggingInterceptor } from './common/interceptors/http-logging.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -19,6 +20,9 @@ async function bootstrap() {
   // Winston을 NestJS 기본 logger로 설정
   const nestWinstonLogger = app.get(WINSTON_MODULE_NEST_PROVIDER);
   app.useLogger(nestWinstonLogger);
+
+  // HTTP 로깅 인터셉터 등록
+  app.useGlobalInterceptors(new HttpLoggingInterceptor(nestWinstonLogger));
 
   // NestJS wrapper에서 실제 winston logger 인스턴스 가져오기
   const actualWinstonLogger = nestWinstonLogger.getWinstonLogger();
