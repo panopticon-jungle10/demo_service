@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
-from app.routers import chat
+from app.routers import chat, analytics
 
 from panopticon_monitoring import MonitoringSDK
 
@@ -69,6 +69,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(chat.router, tags=["chat"])
+app.include_router(analytics.router, tags=["analytics"])
 
 
 @app.get("/health")
