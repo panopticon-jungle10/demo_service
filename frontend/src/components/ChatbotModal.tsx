@@ -18,8 +18,8 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
   const [aiAnswer, setAiAnswer] = useState("");
   const [title, setTitle] = useState("");
   const [password, setPassword] = useState("");
-  const [isAnonymous, setIsAnonymous] = useState(true);
-  const [isPrivate, setIsPrivate] = useState(true);
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(false);
   const [authorName, setAuthorName] = useState("");
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -47,16 +47,14 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
       setAiAnswer(response.aiAnswer);
 
-      // 글작성이 먼저 완료된 경우 자동으로 댓글 등록
-      if (step === "post_submitted") {
-        // Do nothing - post already submitted
-      } else {
-        setStep("ai_answer");
-      }
+      // AI 답변이 완료되어도 step은 변경하지 않음
+      // - ai_loading: 사용자가 "확인" 버튼을 눌러야 다음 단계로 진행
+      // - post_form: 글작성 폼 유지, AI 답변만 업데이트
+      // - post_submitted: 글작성 완료 상태 유지
     } catch (error: any) {
       console.error("Chat error:", error);
       setAiAnswer("챗봇: 오류입니다. AI 서비스가 현재 이용 불가능합니다.");
-      setStep("ai_answer");
+      // 에러가 발생해도 step은 변경하지 않음
     } finally {
       setAiLoading(false);
     }
@@ -151,22 +149,36 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
 
           {step === "ai_loading" && (
             <div>
-              <div className="flex flex-col items-center justify-center py-12">
-                <Loader2 className="w-12 h-12 animate-spin text-indigo-600 mb-4" />
-                <p className="text-gray-700 font-semibold mb-2">AI가 답변을 생성하고 있습니다...</p>
-                <p className="text-sm text-gray-500 mb-8">잠시만 기다려 주세요</p>
-              </div>
+              {aiLoading ? (
+                <div className="flex flex-col items-center justify-center py-12">
+                  <Loader2 className="w-12 h-12 animate-spin text-indigo-600 mb-4" />
+                  <p className="text-gray-700 font-semibold mb-2">AI가 답변을 생성하고 있습니다...</p>
+                  <p className="text-sm text-gray-500 mb-8">잠시만 기다려 주세요</p>
+                </div>
+              ) : (
+                <div className="bg-indigo-50 border border-indigo-100 p-4 rounded-lg mb-4">
+                  <p className="whitespace-pre-wrap text-gray-900 leading-relaxed text-sm">{aiAnswer}</p>
+                </div>
+              )}
 
               <div className="border-t pt-6">
                 <h3 className="text-base font-semibold mb-4 text-gray-900">
-                  AI 답변을 기다리는 동안 글을 작성하시겠습니까?
+                  글을 작성하시겠습니까?
                 </h3>
-                <button
-                  onClick={() => setStep("post_form")}
-                  className="w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 font-semibold transition-colors text-sm"
-                >
-                  글작성 시작
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setStep("post_form")}
+                    className="flex-1 bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 font-semibold transition-colors text-sm"
+                  >
+                    확인
+                  </button>
+                  <button
+                    onClick={onClose}
+                    className="flex-1 bg-gray-200 text-gray-700 py-2.5 rounded-lg hover:bg-gray-300 font-semibold transition-colors text-sm"
+                  >
+                    나가기
+                  </button>
+                </div>
               </div>
             </div>
           )}
@@ -184,13 +196,13 @@ export default function ChatbotModal({ onClose }: ChatbotModalProps) {
                   onClick={() => setStep("post_form")}
                   className="flex-1 bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 font-semibold transition-colors text-sm"
                 >
-                  네
+                  확인
                 </button>
                 <button
                   onClick={onClose}
                   className="flex-1 bg-gray-200 text-gray-700 py-2.5 rounded-lg hover:bg-gray-300 font-semibold transition-colors text-sm"
                 >
-                  아니요
+                  나가기
                 </button>
               </div>
             </div>
