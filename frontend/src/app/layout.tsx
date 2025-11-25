@@ -14,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="container mx-auto px-4">
             <nav className="flex items-center justify-between h-16">
               <div className="flex items-center space-x-8">
-                <h1 className="text-2xl font-bold text-gray-900">Panopticon Q&A</h1>
+                <h1 className="text-2xl font-bold text-gray-900">LogQ</h1>
                 <div className="hidden md:flex space-x-6 text-sm">
                   <a href="/" className="text-gray-700 hover:text-indigo-600 font-medium">
                     HOME
