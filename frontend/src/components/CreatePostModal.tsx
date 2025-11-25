@@ -18,8 +18,8 @@ export default function CreatePostModal({
   const [password, setPassword] = useState("");
   const [authorName, setAuthorName] = useState("");
   const [email, setEmail] = useState("");
-  const [isAnonymous, setIsAnonymous] = useState(true);
-  const [isPrivate, setIsPrivate] = useState(true);
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [isPrivate, setIsPrivate] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
