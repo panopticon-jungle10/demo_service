@@ -174,7 +174,13 @@ export default function Home() {
                       {post.authorName || 'PLIPOP'}
                     </td>
                     <td className="py-4 px-4 text-center text-sm text-gray-600">
-                      {new Date(post.createdAt).toLocaleDateString('ko-KR')}
+                      {new Date(post.createdAt).toLocaleString('ko-KR', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
                     </td>
                   </tr>
                 ))
@@ -209,7 +215,13 @@ export default function Home() {
                 </div>
                 <div className="flex items-center justify-between text-xs text-gray-500">
                   <span>{post.authorName || 'PLIPOP'}</span>
-                  <span>{new Date(post.createdAt).toLocaleDateString('ko-KR')}</span>
+                  <span>{new Date(post.createdAt).toLocaleString('ko-KR', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}</span>
                 </div>
               </div>
             ))
