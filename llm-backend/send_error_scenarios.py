@@ -122,7 +122,7 @@ def create_error_scenario():
     )
 
     # 2-8. Bedrock invoke spans (7개) - OK (각 호출 자체는 성공)
-    cumulative_time = 0
+    cumulative_time = 0.15  # root span보다 150ms 후에 시작
     for i in range(1, 8):
         invoke_duration = random.uniform(4000, 5000)  # 4~5초
         invoke_start_time = start_time.timestamp() + cumulative_time
