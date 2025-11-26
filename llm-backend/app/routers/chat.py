@@ -93,7 +93,7 @@ async def chat(request: ChatRequest):
     3. Return complete response
     """
 
-    logger.info(f"Full request data: {request.model_dump()}")
+    logger.info(f"Chat request: conversationId={request.conversationId if hasattr(request, 'conversationId') else 'N/A'}, wantsToPost={request.wantsToPost}")
 
     # Step 1: Generate AI answer
     try:

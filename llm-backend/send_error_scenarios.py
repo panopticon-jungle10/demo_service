@@ -72,7 +72,7 @@ def create_error_scenario():
                 "service_name": SERVICE_NAME,
                 "environment": ENVIRONMENT,
                 "level": "warn",
-                "message": f"시도 {i}/78] 응답 길이 초과: {answer_length}자 > 1000자",
+                "message": f"시도 {i}/7 응답 길이 초과: {answer_length}자 > 1000자",
                 "context": "app.services.bedrock_service",
                 "trace": None,
                 "trace_id": trace_id,
