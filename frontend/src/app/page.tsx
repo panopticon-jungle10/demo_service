@@ -6,7 +6,8 @@ import { api } from '@/lib/api';
 import { PostListItem } from '@/types';
 import CreatePostModal from '@/components/CreatePostModal';
 import ChatbotModal from '@/components/ChatbotModal';
-import { Lock, MessageCircle, Search, ChevronDown } from 'lucide-react';
+import TrafficGeneratorModal from '@/components/TrafficGeneratorModal';
+import { Lock, MessageCircle, Search, ChevronDown, Zap } from 'lucide-react';
 
 export default function Home() {
   const router = useRouter();
@@ -14,6 +15,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
+  const [showTrafficGenerator, setShowTrafficGenerator] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isGuideOpen, setIsGuideOpen] = useState(false);
 
@@ -47,10 +49,16 @@ export default function Home() {
   return (
     <main className="container mx-auto px-4 py-12">
       <div className="max-w-5xl mx-auto">
-        {/* Page Title */}
+        {/* Page Title & Write Button */}
         <div className="text-center mb-6 md:mb-10">
           <h1 className="text-3xl md:text-5xl font-bold mb-2 md:mb-3 text-gray-900">Q&A</h1>
-          <p className="text-sm md:text-base text-gray-600">서비스에 대한 질문과 답변</p>
+          <p className="text-sm md:text-base text-gray-600 mb-4">서비스에 대한 질문과 답변</p>
+          <button
+            onClick={() => setShowCreatePost(true)}
+            className="bg-indigo-600 text-white px-8 py-2.5 rounded-full text-sm font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all"
+          >
+            글쓰기
+          </button>
         </div>
 
         {/* Service Information */}
@@ -64,20 +72,36 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Accordion Section */}
-          <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-            <button
-              onClick={() => setIsGuideOpen(!isGuideOpen)}
-              className="w-full flex items-center justify-between p-4 md:p-5 hover:bg-gray-50 transition-colors"
-              aria-expanded={isGuideOpen}
-            >
-              <h3 className="text-base md:text-lg font-semibold text-gray-900">서비스 이용 안내</h3>
-              <ChevronDown
-                className={`w-5 h-5 text-gray-600 transition-transform duration-200 ${
-                  isGuideOpen ? 'rotate-180' : ''
-                }`}
-              />
-            </button>
+          {/* Accordion Sections */}
+          <div className="space-y-3">
+            {/* Traffic Generator Accordion */}
+            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+              <button
+                onClick={() => setShowTrafficGenerator(true)}
+                className="w-full flex items-center justify-between p-4 md:p-5 hover:bg-indigo-50 transition-colors group"
+              >
+                <div className="flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-indigo-600" />
+                  <h3 className="text-base md:text-lg font-semibold text-gray-900">트래픽 발생시키기</h3>
+                </div>
+                <span className="text-sm text-indigo-600 font-medium">클릭</span>
+              </button>
+            </div>
+
+            {/* Service Guide Accordion */}
+            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+              <button
+                onClick={() => setIsGuideOpen(!isGuideOpen)}
+                className="w-full flex items-center justify-between p-4 md:p-5 hover:bg-gray-50 transition-colors"
+                aria-expanded={isGuideOpen}
+              >
+                <h3 className="text-base md:text-lg font-semibold text-gray-900">서비스 이용 안내</h3>
+                <ChevronDown
+                  className={`w-5 h-5 text-gray-600 transition-transform duration-200 ${
+                    isGuideOpen ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
 
             {isGuideOpen && (
               <div className="border-t border-gray-200 p-4 md:p-6 space-y-6 animate-in slide-in-from-top duration-200">
@@ -125,6 +149,7 @@ export default function Home() {
                 </div>
               </div>
             )}
+            </div>
           </div>
         </div>
 
@@ -228,8 +253,8 @@ export default function Home() {
           )}
         </div>
 
-        {/* Search & Write Button */}
-        <div className="mt-6 md:mt-8 flex flex-col sm:flex-row gap-3 sm:justify-between sm:items-center">
+        {/* Search */}
+        <div className="mt-6 md:mt-8">
           <div className="relative flex items-center gap-2 bg-white border border-gray-300 rounded-full px-4 py-2.5 w-full sm:w-80 shadow-sm focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-100 transition-all">
             <Search className="w-4 h-4 text-gray-400" />
             <input
@@ -248,12 +273,6 @@ export default function Home() {
               </button>
             )}
           </div>
-          <button
-            onClick={() => setShowCreatePost(true)}
-            className="bg-indigo-600 text-white px-8 py-2.5 rounded-full text-sm font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all w-full sm:w-auto"
-          >
-            글쓰기
-          </button>
         </div>
       </div>
 
@@ -269,6 +288,9 @@ export default function Home() {
         <CreatePostModal onClose={() => setShowCreatePost(false)} onSuccess={loadPosts} />
       )}
       {showChatbot && <ChatbotModal onClose={handleCloseChatbot} />}
+      {showTrafficGenerator && (
+        <TrafficGeneratorModal onClose={() => setShowTrafficGenerator(false)} />
+      )}
     </main>
   );
 }
