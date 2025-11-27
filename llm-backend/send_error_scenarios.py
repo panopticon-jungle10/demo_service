@@ -17,7 +17,7 @@ PRODUCER_TRACE_URL = "https://api.jungle-panopticon.cloud/producer/sdk/traces"
 API_KEY = "yesyes"
 
 # 서비스 설정
-SERVICE_NAME = "LLM-Backend"
+SERVICE_NAME = "LogQ-LLM-Backend"
 ENVIRONMENT = "Production"
 BASE_URL = "https://qna.jungle-panopticon.cloud"
 
