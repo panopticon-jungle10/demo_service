@@ -2,18 +2,14 @@
  * 트레이스 ID 생성 (32자 hex)
  */
 export function generateTraceId(): string {
-  return Array.from({ length: 32 }, () =>
-    Math.floor(Math.random() * 16).toString(16)
-  ).join('');
+  return Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
 }
 
 /**
  * 스팬 ID 생성 (16자 hex)
  */
 export function generateSpanId(): string {
-  return Array.from({ length: 16 }, () =>
-    Math.floor(Math.random() * 16).toString(16)
-  ).join('');
+  return Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
 }
 
 /**
@@ -38,8 +34,8 @@ export function generateSingleTrace(isError: boolean = false) {
   return {
     type: 'span',
     timestamp,
-    service_name: 'demo-traffic-generator',
-    environment: 'demo',
+    service_name: 'LogQ-API-Backend',
+    environment: 'Production',
     trace_id: traceId,
     span_id: spanId,
     parent_span_id: null, // 루트 스팬
