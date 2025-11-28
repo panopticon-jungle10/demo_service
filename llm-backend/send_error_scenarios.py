@@ -60,7 +60,7 @@ def create_error_scenario():
     )
 
     # 2-7. 재시도 로그 (warning)
-    for i in range(1, 8):
+    for i in range(1, 7):
         retry_time = start_time.timestamp() + (i * 5)  # 5초씩 간격
         answer_length = random.randint(1010, 2000)
         logs.append(

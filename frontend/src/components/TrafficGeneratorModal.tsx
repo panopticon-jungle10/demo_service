@@ -18,7 +18,7 @@ interface Toast {
 }
 
 const PRODUCER_URL = process.env.NEXT_PUBLIC_PRODUCER_URL || 'http://localhost:3005';
-const TRACE_COUNT = 5000;
+const TRACE_COUNT = 100;
 
 export default function TrafficGeneratorModal({ onClose }: TrafficGeneratorModalProps) {
   const [isGenerating, setIsGenerating] = useState(false);
