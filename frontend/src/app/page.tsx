@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { api } from '@/lib/api';
 import { PostListItem } from '@/types';
@@ -18,28 +18,45 @@ export default function Home() {
   const [showTrafficGenerator, setShowTrafficGenerator] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const paginationRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    loadPosts();
-  }, []);
+    loadPosts(currentPage);
+  }, [currentPage]);
 
-  const loadPosts = () => {
+  const loadPosts = (page: number) => {
+    setLoading(true);
     api
-      .getPosts(1)
-      .then((data) => setPosts(data.data || []))
+      .getPosts(page)
+      .then((data) => {
+        setPosts(data.data || []);
+        setTotalPages(data.totalPages || 1);
+        // 데이터 로드 후 페이지네이션 위치로 스크롤
+        if (page > 1 && paginationRef.current) {
+          setTimeout(() => {
+            paginationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+          }, 100);
+        }
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   };
 
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+  };
+
   const handleCloseChatbot = () => {
     setShowChatbot(false);
-    loadPosts();
+    loadPosts(currentPage);
   };
 
   const filteredPosts = posts
-    .map((post, index) => ({
+    .map((post) => ({
       ...post,
-      postNumber: posts.length - index,
+      postNumber: post.postId,
     }))
     .filter((post) => {
       if (!searchTerm.trim()) return true;
@@ -67,7 +84,9 @@ export default function Home() {
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 md:p-6">
             <div className="text-sm md:text-base text-gray-800 leading-relaxed space-y-2">
               <p>해당 서비스는 Panopticon의 실시간 트래픽 모니터링을 위한 데모 서비스입니다.</p>
-              <p>트래픽 발생과 함께 Panopticon 서비스에 대한 질문에 답변드리기 위해 제작되었습니다.</p>
+              <p>
+                트래픽 발생과 함께 Panopticon 서비스에 대한 질문에 답변드리기 위해 제작되었습니다.
+              </p>
               <p>Panopticon 서비스, 정글생활 관련 질문, 10기 응원 메시지 모두 환영합니다.</p>
             </div>
           </div>
@@ -82,7 +101,9 @@ export default function Home() {
               >
                 <div className="flex items-center gap-2">
                   <Zap className="w-5 h-5 text-indigo-600" />
-                  <h3 className="text-base md:text-lg font-semibold text-gray-900">트래픽 발생시키기</h3>
+                  <h3 className="text-base md:text-lg font-semibold text-gray-900">
+                    트래픽 발생시키기
+                  </h3>
                 </div>
                 <span className="text-sm text-indigo-600 font-medium">클릭</span>
               </button>
@@ -95,7 +116,9 @@ export default function Home() {
                 className="w-full flex items-center justify-between p-4 md:p-5 hover:bg-gray-50 transition-colors"
                 aria-expanded={isGuideOpen}
               >
-                <h3 className="text-base md:text-lg font-semibold text-gray-900">서비스 이용 안내</h3>
+                <h3 className="text-base md:text-lg font-semibold text-gray-900">
+                  서비스 이용 안내
+                </h3>
                 <ChevronDown
                   className={`w-5 h-5 text-gray-600 transition-transform duration-200 ${
                     isGuideOpen ? 'rotate-180' : ''
@@ -103,52 +126,63 @@ export default function Home() {
                 />
               </button>
 
-            {isGuideOpen && (
-              <div className="border-t border-gray-200 p-4 md:p-6 space-y-6 animate-in slide-in-from-top duration-200">
-                {/* Subsection 1: How to Check Answers */}
-                <div>
-                  <h4 className="text-sm md:text-base font-semibold text-gray-900 mb-3">답변 확인 방법</h4>
-                  <div className="text-sm md:text-base text-gray-700 leading-relaxed space-y-2">
-                    <p>답변을 확인하실 수 있는 방법은 두 가지입니다:</p>
-                    <ol className="list-decimal list-inside space-y-1.5 ml-2">
-                      <li>
-                        <strong>이메일 답변:</strong> 이메일 주소를 남겨주시면 해당 이메일로 상세 답변을 회신해드립니다.
-                      </li>
-                      <li>
-                        <strong>사이트 재방문:</strong> 글 번호와 비밀번호를 기억하신 후 재방문하시면 댓글로 답변을 확인하실 수 있습니다.
-                      </li>
-                    </ol>
-                    <div className="mt-3 text-xs md:text-sm text-gray-600 space-y-1">
-                      <p>※ 가급적 이메일 주소를 남겨주시면 더 빠르고 정확한 답변을 받으실 수 있습니다.</p>
-                      <p>※ 본 Q&A 페이지는 2025년 12월 6일 종료 예정입니다.</p>
+              {isGuideOpen && (
+                <div className="border-t border-gray-200 p-4 md:p-6 space-y-6 animate-in slide-in-from-top duration-200">
+                  {/* Subsection 1: How to Check Answers */}
+                  <div>
+                    <h4 className="text-sm md:text-base font-semibold text-gray-900 mb-3">
+                      답변 확인 방법
+                    </h4>
+                    <div className="text-sm md:text-base text-gray-700 leading-relaxed space-y-2">
+                      <p>답변을 확인하실 수 있는 방법은 두 가지입니다:</p>
+                      <ol className="list-decimal list-inside space-y-1.5 ml-2">
+                        <li>
+                          <strong>이메일 답변:</strong> 이메일 주소를 남겨주시면 해당 이메일로 상세
+                          답변을 회신해드립니다.
+                        </li>
+                        <li>
+                          <strong>사이트 재방문:</strong> 글 번호를 기억하신 후 재방문하시면 댓글로
+                          답변을 확인하실 수 있습니다.
+                        </li>
+                      </ol>
+                      <div className="mt-3 text-xs md:text-sm text-gray-600 space-y-1">
+                        <p>
+                          ※ 가급적 이메일 주소를 남겨주시면 더 빠르고 정확한 답변을 받으실 수
+                          있습니다.
+                        </p>
+                        <p>※ 본 Q&A 페이지는 2025년 12월 6일 종료 예정입니다.</p>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Subsection 2: Main Features */}
-                <div className="pt-4 border-t border-gray-100">
-                  <h4 className="text-sm md:text-base font-semibold text-gray-900 mb-3">주요 기능 안내</h4>
-                  <div className="text-sm md:text-base text-gray-700 leading-relaxed space-y-4">
-                    <div>
-                      <p className="font-semibold text-gray-900 mb-1.5">1. 글쓰기</p>
-                      <ul className="list-disc list-inside space-y-1 ml-2 text-gray-600">
-                        <li>일반적인 게시글 작성 기능입니다.</li>
-                        <li>글 작성 시 설정한 비밀번호는 수정 및 비공개 글 열람 시 필요합니다.</li>
-                        <li>삭제 기능은 제공되지 않습니다.</li>
-                      </ul>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-gray-900 mb-1.5">2. AI 챗봇 (우측 하단)</p>
-                      <ul className="list-disc list-inside space-y-1 ml-2 text-gray-600">
-                        <li>Panopticon 서비스에 대해 학습된 AI 챗봇이 즉시 답변을 제공합니다.</li>
-                        <li>Panopticon 관련 질문에 한해 자동 답변이 가능합니다.</li>
-                        <li>챗봇 이용 후 바로 글로 남기실 수 있으며, 개발팀의 추가 답변도 받으실 수 있습니다.</li>
-                      </ul>
+                  {/* Subsection 2: Main Features */}
+                  <div className="pt-4 border-t border-gray-100">
+                    <h4 className="text-sm md:text-base font-semibold text-gray-900 mb-3">
+                      주요 기능 안내
+                    </h4>
+                    <div className="text-sm md:text-base text-gray-700 leading-relaxed space-y-4">
+                      <div>
+                        <p className="font-semibold text-gray-900 mb-1.5">1. 글쓰기</p>
+                        <ul className="list-disc list-inside space-y-1 ml-2 text-gray-600">
+                          <li>일반적인 게시글 작성 기능입니다.</li>
+                          <li>수정, 삭제 기능은 제공되지 않습니다.</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900 mb-1.5">2. AI 챗봇 (우측 하단)</p>
+                        <ul className="list-disc list-inside space-y-1 ml-2 text-gray-600">
+                          <li>Panopticon 서비스에 대해 학습된 AI 챗봇이 즉시 답변을 제공합니다.</li>
+                          <li>Panopticon 관련 질문에 한해 자동 답변이 가능합니다.</li>
+                          <li>
+                            챗봇 이용 후 바로 글로 남기실 수 있으며, 개발팀의 추가 답변도 받으실 수
+                            있습니다.
+                          </li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
             </div>
           </div>
         </div>
@@ -196,7 +230,7 @@ export default function Home() {
                       </div>
                     </td>
                     <td className="py-4 px-4 text-center text-sm text-gray-600">
-                      {post.authorName || 'PLIPOP'}
+                      JUNGLE
                     </td>
                     <td className="py-4 px-4 text-center text-sm text-gray-600">
                       {new Date(post.createdAt).toLocaleString('ko-KR', {
@@ -204,7 +238,7 @@ export default function Home() {
                         month: '2-digit',
                         day: '2-digit',
                         hour: '2-digit',
-                        minute: '2-digit'
+                        minute: '2-digit',
                       })}
                     </td>
                   </tr>
@@ -234,19 +268,25 @@ export default function Home() {
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-2 flex-1">
                     {post.isPrivate && <Lock className="w-4 h-4 text-gray-400 flex-shrink-0" />}
-                    <span className="text-sm text-gray-900 font-medium line-clamp-2">{post.title}</span>
+                    <span className="text-sm text-gray-900 font-medium line-clamp-2">
+                      {post.title}
+                    </span>
                   </div>
-                  <span className="text-xs text-gray-400 ml-2 flex-shrink-0">#{post.postNumber}</span>
+                  <span className="text-xs text-gray-400 ml-2 flex-shrink-0">
+                    #{post.postNumber}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between text-xs text-gray-500">
-                  <span>{post.authorName || 'PLIPOP'}</span>
-                  <span>{new Date(post.createdAt).toLocaleString('ko-KR', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}</span>
+                  <span>JUNGLE</span>
+                  <span>
+                    {new Date(post.createdAt).toLocaleString('ko-KR', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </span>
                 </div>
               </div>
             ))
@@ -274,6 +314,43 @@ export default function Home() {
             )}
           </div>
         </div>
+
+        {/* Pagination */}
+        {!searchTerm && totalPages > 1 && (
+          <div ref={paginationRef} className="mt-8 flex justify-center items-center gap-2">
+            <button
+              onClick={() => handlePageChange(1)}
+              disabled={currentPage === 1}
+              className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              처음
+            </button>
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              이전
+            </button>
+            <span className="px-4 py-2 text-sm font-medium text-gray-900">
+              {currentPage} / {totalPages}
+            </span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              다음
+            </button>
+            <button
+              onClick={() => handlePageChange(totalPages)}
+              disabled={currentPage === totalPages}
+              className="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              마지막
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Floating Chatbot Button */}
@@ -285,7 +362,7 @@ export default function Home() {
       </button>
 
       {showCreatePost && (
-        <CreatePostModal onClose={() => setShowCreatePost(false)} onSuccess={loadPosts} />
+        <CreatePostModal onClose={() => setShowCreatePost(false)} onSuccess={() => { setCurrentPage(1); loadPosts(1); }} />
       )}
       {showChatbot && <ChatbotModal onClose={handleCloseChatbot} />}
       {showTrafficGenerator && (

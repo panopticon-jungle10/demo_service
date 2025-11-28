@@ -13,23 +13,13 @@ export default function CreatePostModal({
   onClose,
   onSuccess,
 }: CreatePostModalProps) {
-  const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [password, setPassword] = useState("");
-  const [authorName, setAuthorName] = useState("");
   const [email, setEmail] = useState("");
-  const [isAnonymous, setIsAnonymous] = useState(false);
-  const [isPrivate, setIsPrivate] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!title.trim() || !content.trim() || !password.trim()) {
-      alert("제목, 내용, 비밀번호는 필수입니다");
-      return;
-    }
-
-    if (!authorName.trim()) {
-      alert("이름은 필수입니다");
+    if (!content.trim()) {
+      alert("내용은 필수입니다");
       return;
     }
 
@@ -37,13 +27,8 @@ export default function CreatePostModal({
 
     try {
       const res = await api.createPost({
-        title,
         content,
-        password,
-        authorName,
         email: email || undefined,
-        isAnonymous,
-        isPrivate,
       });
 
       alert(`${res.message}`);
@@ -73,85 +58,23 @@ export default function CreatePostModal({
         <div className="space-y-5">
           <div>
             <label className="block text-sm font-semibold mb-2 text-gray-700">
-              제목 *
-            </label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="제목을 입력하세요"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold mb-2 text-gray-700">
               내용 *
             </label>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
               className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              rows={8}
+              rows={10}
               placeholder="내용을 입력하세요"
             />
           </div>
 
           <div>
             <label className="block text-sm font-semibold mb-2 text-gray-700">
-              비밀번호 *
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="비밀번호 (조회, 수정시 필요)"
-            />
-          </div>
-
-          <div className="flex gap-6 py-2">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isAnonymous}
-                onChange={(e) => setIsAnonymous(e.target.checked)}
-                className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 rounded"
-              />
-              <span className="text-sm text-gray-700 font-medium">익명</span>
-            </label>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={isPrivate}
-                onChange={(e) => setIsPrivate(e.target.checked)}
-                className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 rounded"
-              />
-              <span className="text-sm text-gray-700 font-medium">비공개</span>
-            </label>
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold mb-2 text-gray-700">
-              이름 *{" "}
-              {isAnonymous && (
-                <span className="text-xs text-gray-500 font-normal">
-                  (익명으로 표시됩니다)
-                </span>
-              )}
-            </label>
-            <input
-              type="text"
-              value={authorName}
-              onChange={(e) => setAuthorName(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-              placeholder="이름 또는 별칭"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold mb-2 text-gray-700">
-              상세 답변 수신 이메일 (선택)
+              이메일 (선택)
+              <span className="text-xs text-gray-500 block mt-1">
+                이메일을 적어주시면 답변을 이메일로 보내드립니다
+              </span>
             </label>
             <input
               type="email"

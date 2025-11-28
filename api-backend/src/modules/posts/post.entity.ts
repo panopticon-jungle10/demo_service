@@ -4,7 +4,6 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
-  Generated,
   OneToMany,
 } from 'typeorm';
 import { Comment } from '../comments/comment.entity';
@@ -15,11 +14,10 @@ export class Post {
   id: string;
 
   @Column({ type: 'int' })
-  @Generated('increment')
   postId: number;
 
-  @Column({ type: 'varchar', length: 255 })
-  title: string;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  title: string | null;
 
   @Column({ type: 'text' })
   content: string;
@@ -30,8 +28,8 @@ export class Post {
   @Column({ type: 'varchar', length: 255, nullable: true })
   email: string;
 
-  @Column({ type: 'varchar', length: 100 })
-  authorName: string;
+  @Column({ type: 'varchar', length: 100, nullable: true })
+  authorName: string | null;
 
   @Column({ type: 'boolean', default: true })
   isPrivate: boolean;

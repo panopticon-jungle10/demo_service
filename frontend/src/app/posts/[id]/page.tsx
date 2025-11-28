@@ -45,9 +45,6 @@ export default function PostDetailPage() {
     fetchPost(password);
   };
 
-  const handleEdit = () => {
-    router.push(`/posts/${params.id}/edit`);
-  };
 
   if (loading) {
     return (
@@ -104,7 +101,7 @@ export default function PostDetailPage() {
             <h1 className="text-xl md:text-3xl font-bold mb-3 md:mb-4 text-gray-900">{post.title}</h1>
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs md:text-sm text-gray-600">
               <div className="flex items-center gap-2 md:gap-4">
-                <span>작성자: {post.isAnonymous ? '익명' : post.authorName}</span>
+                <span>작성자: JUNGLE</span>
                 <span className="hidden sm:inline">{new Date(post.createdAt).toLocaleString('ko-KR')}</span>
                 <span className="sm:hidden">{new Date(post.createdAt).toLocaleDateString('ko-KR')}</span>
               </div>
@@ -132,15 +129,9 @@ export default function PostDetailPage() {
         <div className="mt-6 md:mt-8 flex flex-col sm:flex-row justify-center gap-3">
           <button
             onClick={() => router.push('/')}
-            className="px-8 py-3 bg-gray-100 text-gray-700 rounded-lg text-sm font-semibold hover:bg-gray-200 transition-colors w-full sm:w-auto"
-          >
-            목록
-          </button>
-          <button
-            onClick={handleEdit}
             className="px-8 py-3 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-colors w-full sm:w-auto"
           >
-            수정
+            목록으로 돌아가기
           </button>
         </div>
       </div>

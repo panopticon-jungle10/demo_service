@@ -4,11 +4,6 @@ import re
 
 
 class PostData(BaseModel):
-    title: str = Field(..., min_length=1)
-    password: str = Field(..., min_length=1)
-    authorName: str = Field(..., min_length=1)
-    isAnonymous: bool
-    isPrivate: bool
     email: Optional[str] = None
 
     @field_validator('email')
@@ -16,13 +11,6 @@ class PostData(BaseModel):
     def validate_email(cls, v: Optional[str]) -> Optional[str]:
         # 이메일은 선택사항이므로 형식 검증 안함
         return v if v else None
-
-    @field_validator('authorName')
-    @classmethod
-    def validate_author_name(cls, v: str, info) -> str:
-        if not v or not v.strip():
-            raise ValueError('작성자 이름이 필요합니다')
-        return v
 
 
 class ChatRequest(BaseModel):

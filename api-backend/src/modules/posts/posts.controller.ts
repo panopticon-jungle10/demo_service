@@ -31,8 +31,8 @@ export class PostsController {
   }
 
   @Get('search')
-  findByPostId(@Query('postId') postId: string, @Query('password') password?: string) {
-    return this.postsService.findByPostId(parseInt(postId, 10), password);
+  findByPostId(@Query('postId') postId: string) {
+    return this.postsService.findByPostId(parseInt(postId, 10));
   }
 
   @Get(':id')
@@ -40,21 +40,10 @@ export class PostsController {
     return this.postsService.findOne(id);
   }
 
-  @Post(':id/access')
-  @HttpCode(HttpStatus.OK)
-  accessPrivatePost(@Param('id') id: string, @Body() verifyPasswordDto: VerifyPasswordDto) {
-    return this.postsService.findOne(id, verifyPasswordDto.password);
-  }
-
   @Post(':id/admin-access')
   @HttpCode(HttpStatus.OK)
   adminAccessPost(@Param('id') id: string, @Body() body: { adminPassword: string }) {
     return this.postsService.findOneAsAdmin(id, body.adminPassword);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
-    return this.postsService.update(id, updatePostDto);
   }
 
   @Post('verify-admin')
