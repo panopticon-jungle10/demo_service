@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { X, Zap } from 'lucide-react';
 import ToastContainer from './ToastContainer';
 import { generateBatchTraces } from '@/utils/dummyTraceGenerator';
+import { useTrafficLimit } from '@/hooks/useTrafficLimit';
 
 interface TrafficGeneratorModalProps {
   onClose: () => void;
@@ -22,6 +23,7 @@ const TRACE_COUNT = 100;
 export default function TrafficGeneratorModal({ onClose }: TrafficGeneratorModalProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const { isLimitReached, remainingRequests, incrementCount, currentCount } = useTrafficLimit();
 
   const addToast = (
     message: string,
@@ -43,6 +45,19 @@ export default function TrafficGeneratorModal({ onClose }: TrafficGeneratorModal
 
   const generateTraffic = async (type: 'normal' | 'error') => {
     if (isGenerating) return;
+
+    // Check if limit is reached
+    if (isLimitReached) {
+      addToast('트래픽 발생 한도에 도달했습니다 (100회)', 'error');
+      return;
+    }
+
+    // Try to increment count (count button clicks, not traffic amount)
+    const canProceed = incrementCount(1);
+    if (!canProceed) {
+      addToast(`현재 ${currentCount}회 클릭. 100회를 초과할 수 없습니다`, 'error');
+      return;
+    }
 
     setIsGenerating(true);
     const isError = type === 'error';
@@ -100,14 +115,28 @@ export default function TrafficGeneratorModal({ onClose }: TrafficGeneratorModal
               확인할 수 있습니다.
             </p>
 
+            {/* Limit reached warning (100 times reached) */}
+            {isLimitReached && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-800 font-semibold">
+                  트래픽 발생 한도에 도달했습니다 (100회)
+                </p>
+                <p className="text-xs text-red-600 mt-1">
+                  브라우저 데이터를 삭제하면 초기화됩니다
+                </p>
+              </div>
+            )}
+
             {/* Normal Traffic Button */}
             <button
               onClick={() => generateTraffic('normal')}
-              disabled={isGenerating}
+              disabled={isGenerating || isLimitReached}
               className="w-full px-6 py-4 bg-white border-2 border-gray-300 text-gray-800 rounded-lg text-base font-semibold hover:border-indigo-400 hover:bg-indigo-50 disabled:bg-gray-100 disabled:border-gray-200 disabled:cursor-not-allowed transition-all shadow-sm"
             >
               <div className="flex items-center justify-between">
-                <span>{isGenerating ? '발생 중...' : '일반 트래픽 발생'}</span>
+                <span>
+                  {isLimitReached ? '한도 초과' : isGenerating ? '발생 중...' : '일반 트래픽 발생'}
+                </span>
                 <span className="text-sm text-gray-500">{TRACE_COUNT}건</span>
               </div>
               <p className="text-xs text-gray-500 mt-1 text-left">정상적인 요청을 발생시킵니다</p>
@@ -116,11 +145,13 @@ export default function TrafficGeneratorModal({ onClose }: TrafficGeneratorModal
             {/* Error Traffic Button */}
             <button
               onClick={() => generateTraffic('error')}
-              disabled={isGenerating}
+              disabled={isGenerating || isLimitReached}
               className="w-full px-6 py-4 bg-white border-2 border-gray-300 text-gray-800 rounded-lg text-base font-semibold hover:border-red-400 hover:bg-red-50 disabled:bg-gray-100 disabled:border-gray-200 disabled:cursor-not-allowed transition-all shadow-sm"
             >
               <div className="flex items-center justify-between">
-                <span>{isGenerating ? '발생 중...' : '에러 트래픽 발생'}</span>
+                <span>
+                  {isLimitReached ? '한도 초과' : isGenerating ? '발생 중...' : '에러 트래픽 발생'}
+                </span>
                 <span className="text-sm text-gray-500">{TRACE_COUNT}건</span>
               </div>
               <p className="text-xs text-gray-500 mt-1 text-left">500 에러를 발생시킵니다</p>

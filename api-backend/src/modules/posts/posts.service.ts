@@ -24,15 +24,22 @@ export class PostsService {
   ) {}
 
   async create(createPostDto: CreatePostDto) {
-    if (!createPostDto.authorName || !createPostDto.authorName.trim()) {
-      throw new BadRequestException('작성자 이름이 필요합니다.');
-    }
+    // MAX(postId) + 1 방식으로 postId 생성
+    const maxPostIdResult = await this.postsRepository
+      .createQueryBuilder('post')
+      .select('MAX(post.postId)', 'maxPostId')
+      .getRawOne();
 
-    const hashedPassword = await bcrypt.hash(createPostDto.password, 10);
+    const nextPostId = (maxPostIdResult?.maxPostId || 0) + 1;
 
     const post = this.postsRepository.create({
       ...createPostDto,
-      password: hashedPassword,
+      postId: nextPostId,
+      password: '',
+      title: null,
+      authorName: 'JUNGLE',
+      isPrivate: false,
+      isAnonymous: false,
     });
 
     const savedPost = await this.postsRepository.save(post);
@@ -40,12 +47,12 @@ export class PostsService {
     return {
       id: savedPost.id,
       postId: savedPost.postId,
-      message: `생성번호는 답변확인과 수정시 필요합니다. 생성번호: ${savedPost.postId}`,
+      message: `글이 작성되었습니다. 생성번호: ${savedPost.postId}`,
     };
   }
 
   async findAll(page: number = 1) {
-    const take = 20;
+    const take = 10;
     const skip = (page - 1) * take;
 
     const [posts, total] = await this.postsRepository.findAndCount({
@@ -56,30 +63,19 @@ export class PostsService {
     });
 
     const mappedPosts = posts.map((post) => {
-      const maskedName = post.isAnonymous
-        ? this.maskAuthorNameMiddle(post.authorName)
-        : post.authorName;
+      // 내용의 첫 50자를 미리보기로 사용
+      const contentPreview = post.content?.substring(0, 50) || '';
 
-      if (post.isPrivate) {
-        return {
-          id: post.id,
-          postId: post.postId,
-          title: post.title,
-          isPrivate: true,
-          authorName: maskedName,
-          createdAt: post.createdAt,
-          comments: post.comments,
-        };
-      }
+      // 기존 게시글은 title 사용, 새 게시글은 내용 미리보기 사용
+      const displayTitle = post.title || contentPreview;
+
       return {
         id: post.id,
         postId: post.postId,
-        title: post.title,
+        title: displayTitle,
         content: post.content,
         email: post.email,
-        authorName: maskedName,
         isPrivate: post.isPrivate,
-        isAnonymous: post.isAnonymous,
         createdAt: post.createdAt,
         updatedAt: post.updatedAt,
         comments: post.comments,
@@ -94,7 +90,7 @@ export class PostsService {
     };
   }
 
-  async findOne(id: string, password?: string) {
+  async findOne(id: string) {
     const post = await this.postsRepository.findOne({
       where: { id },
       relations: ['comments'],
@@ -102,17 +98,6 @@ export class PostsService {
 
     if (!post) {
       throw new NotFoundException('글을 찾을 수 없습니다.');
-    }
-
-    if (post.isPrivate) {
-      if (!password) {
-        throw new UnauthorizedException('비공개 글입니다. 비밀번호가 필요합니다.');
-      }
-
-      const isPasswordValid = await bcrypt.compare(password, post.password);
-      if (!isPasswordValid) {
-        throw new UnauthorizedException('비밀번호가 올바르지 않습니다.');
-      }
     }
 
     const { password: _, ...result } = post;
@@ -138,60 +123,15 @@ export class PostsService {
     return result;
   }
 
-  async findByPostId(postId: number, password?: string) {
+  async findByPostId(postId: number) {
     const post = await this.postsRepository.findOne({ where: { postId } });
 
     if (!post) {
       throw new NotFoundException('글을 찾을 수 없습니다.');
     }
 
-    if (post.isPrivate) {
-      if (!password) {
-        throw new UnauthorizedException('비공개 글입니다. 비밀번호가 필요합니다.');
-      }
-
-      const isPasswordValid = await bcrypt.compare(password, post.password);
-      if (!isPasswordValid) {
-        throw new UnauthorizedException('비밀번호가 올바르지 않습니다.');
-      }
-    }
-
     const { password: _, ...result } = post;
     return result;
-  }
-
-  async update(id: string, updatePostDto: UpdatePostDto) {
-    const post = await this.postsRepository.findOne({ where: { id } });
-
-    if (!post) {
-      throw new NotFoundException('글을 찾을 수 없습니다.');
-    }
-
-    const isPasswordValid = await bcrypt.compare(updatePostDto.password, post.password);
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('비밀번호가 올바르지 않습니다.');
-    }
-
-    if (!updatePostDto.authorName || !updatePostDto.authorName.trim()) {
-      throw new BadRequestException('작성자 이름이 필요합니다.');
-    }
-
-    const { password, ...updateData } = updatePostDto;
-    Object.assign(post, updateData);
-
-    await this.postsRepository.save(post);
-
-    return { message: '글이 수정되었습니다.' };
-  }
-
-  private maskAuthorNameMiddle(authorName: string | null): string {
-    if (!authorName) return '익명';
-
-    if (authorName.length === 1) return authorName;
-    if (authorName.length === 2) return authorName[0] + '*';
-
-    const mid = Math.floor(authorName.length / 2);
-    return '*'.repeat(mid) + authorName[mid] + '*'.repeat(authorName.length - mid - 1);
   }
 
   async getAllCount() {

@@ -25,12 +25,8 @@ export default function PostList({ posts }: PostListProps) {
                 <h3 className="text-lg font-semibold text-gray-900">
                   {post.title}
                 </h3>
-                {post.isPrivate && (
-                  <Lock className="w-4 h-4 text-gray-400" />
-                )}
               </div>
               <div className="flex items-center gap-4 text-sm text-gray-500">
-                <span>{post.authorName || '익명'}</span>
                 <span>
                   {formatDistanceToNow(new Date(post.createdAt), {
                     addSuffix: true,

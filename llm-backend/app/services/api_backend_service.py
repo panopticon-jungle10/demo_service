@@ -14,12 +14,7 @@ class APIBackendService:
 
     async def create_post(
         self,
-        title: str,
         content: str,
-        password: str,
-        is_anonymous: bool,
-        is_private: bool,
-        author_name: Optional[str] = None,
         email: Optional[str] = None,
     ) -> Optional[Dict[str, Any]]:
         """
@@ -29,15 +24,9 @@ class APIBackendService:
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as client:
                 payload = {
-                    "title": title,
                     "content": content,
-                    "password": password,
-                    "isAnonymous": is_anonymous,
-                    "isPrivate": is_private,
                 }
 
-                if author_name:
-                    payload["authorName"] = author_name
                 if email:
                     payload["email"] = email
 

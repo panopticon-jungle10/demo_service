@@ -120,12 +120,7 @@ async def chat(request: ChatRequest):
 
     # Step 3: Create post
     post_result = await api_backend_service.create_post(
-        title=request.postData.title,
         content=request.originalQuestion,
-        password=request.postData.password,
-        is_anonymous=request.postData.isAnonymous,
-        is_private=request.postData.isPrivate,
-        author_name=request.postData.authorName,
         email=request.postData.email,
     )
 
@@ -214,12 +209,7 @@ async def post(request: PostRequest):
 
     # Create post
     post_result = await api_backend_service.create_post(
-        title=request.postData.title,
         content=request.originalQuestion,
-        password=request.postData.password,
-        is_anonymous=request.postData.isAnonymous,
-        is_private=request.postData.isPrivate,
-        author_name=request.postData.authorName,
         email=request.postData.email,
     )
 

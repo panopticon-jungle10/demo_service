@@ -13,12 +13,8 @@ export default function EditPostPage() {
   const [submitting, setSubmitting] = useState(false);
 
   const [password, setPassword] = useState('');
-  const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [authorName, setAuthorName] = useState('');
   const [email, setEmail] = useState('');
-  const [isAnonymous, setIsAnonymous] = useState(true);
-  const [isPrivate, setIsPrivate] = useState(true);
 
   const [needsPassword, setNeedsPassword] = useState(false);
   const [accessPassword, setAccessPassword] = useState('');
@@ -29,12 +25,8 @@ export default function EditPostPage() {
     try {
       const data = await api.getPost(params.id as string, pwd);
       setPost(data);
-      setTitle(data.title);
       setContent(data.content);
-      setAuthorName(data.authorName || '');
       setEmail(data.email || '');
-      setIsAnonymous(data.isAnonymous ?? true);
-      setIsPrivate(data.isPrivate ?? true);
       setNeedsPassword(false);
       setAccessPasswordError(false);
     } catch (error: any) {
@@ -62,13 +54,8 @@ export default function EditPostPage() {
   };
 
   const handleUpdate = async () => {
-    if (!title.trim() || !content.trim() || !password.trim()) {
-      alert('제목, 내용, 비밀번호는 필수입니다');
-      return;
-    }
-
-    if (!authorName.trim()) {
-      alert('이름은 필수입니다');
+    if (!content.trim() || !password.trim()) {
+      alert('내용과 비밀번호는 필수입니다');
       return;
     }
 
@@ -77,12 +64,8 @@ export default function EditPostPage() {
     try {
       await api.updatePost(params.id as string, {
         password,
-        title,
         content,
-        authorName,
         email: email || undefined,
-        isAnonymous,
-        isPrivate,
       });
 
       alert('글이 수정되었습니다');
@@ -153,19 +136,6 @@ export default function EditPostPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-semibold mb-2 text-black">
-                제목 *
-              </label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded text-sm text-black"
-                placeholder="제목을 입력하세요"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-black">
                 내용 *
               </label>
               <textarea
@@ -200,43 +170,12 @@ export default function EditPostPage() {
               )}
             </div>
 
-            <div className="flex gap-4">
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={isAnonymous}
-                  onChange={(e) => setIsAnonymous(e.target.checked)}
-                  className="w-4 h-4"
-                />
-                <span className="text-sm text-black">익명</span>
-              </label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={isPrivate}
-                  onChange={(e) => setIsPrivate(e.target.checked)}
-                  className="w-4 h-4"
-                />
-                <span className="text-sm text-black">비공개</span>
-              </label>
-            </div>
-
             <div>
               <label className="block text-sm font-semibold mb-2 text-black">
-                이름 * {isAnonymous && <span className="text-xs text-gray-500">(익명으로 표시됩니다)</span>}
-              </label>
-              <input
-                type="text"
-                value={authorName}
-                onChange={(e) => setAuthorName(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded text-sm text-black"
-                placeholder="이름"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-2 text-black">
-                이메일 (선택)
+                상세 답변 수신 이메일 (선택)
+                <span className="text-xs text-gray-500 block mt-1">
+                  이메일을 적어주시면 답변을 이메일로 보내드립니다
+                </span>
               </label>
               <input
                 type="email"
