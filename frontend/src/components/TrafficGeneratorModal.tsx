@@ -18,7 +18,7 @@ interface Toast {
 }
 
 const PRODUCER_URL = process.env.NEXT_PUBLIC_PRODUCER_URL || 'http://localhost:3005';
-const TRACE_COUNT = 100;
+const TRACE_COUNT = 5000;
 
 export default function TrafficGeneratorModal({ onClose }: TrafficGeneratorModalProps) {
   const [isGenerating, setIsGenerating] = useState(false);
@@ -121,9 +121,7 @@ export default function TrafficGeneratorModal({ onClose }: TrafficGeneratorModal
                 <p className="text-sm text-red-800 font-semibold">
                   트래픽 발생 한도에 도달했습니다 (100회)
                 </p>
-                <p className="text-xs text-red-600 mt-1">
-                  브라우저 데이터를 삭제하면 초기화됩니다
-                </p>
+                <p className="text-xs text-red-600 mt-1">브라우저 데이터를 삭제하면 초기화됩니다</p>
               </div>
             )}
 

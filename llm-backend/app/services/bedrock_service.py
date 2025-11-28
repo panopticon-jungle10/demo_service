@@ -135,8 +135,8 @@ class BedrockService:
             body = json.dumps(
                 {
                     "anthropic_version": "bedrock-2023-05-31",
-                    "max_tokens": 2048,
-                    "temperature": 0.4,
+                    "max_tokens": 1024,
+                    "temperature": 0.2,
                     "system": self.system_prompt,
                     "messages": [{"role": "user", "content": question}],
                 }
