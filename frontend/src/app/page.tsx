@@ -75,7 +75,7 @@ export default function Home() {
           {/* Accordion Sections */}
           <div className="space-y-3">
             {/* Traffic Generator Accordion */}
-            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <div className="bg-white border-2 border-indigo-400 rounded-lg overflow-hidden shadow-sm">
               <button
                 onClick={() => setShowTrafficGenerator(true)}
                 className="w-full flex items-center justify-between p-4 md:p-5 hover:bg-indigo-50 transition-colors group"
