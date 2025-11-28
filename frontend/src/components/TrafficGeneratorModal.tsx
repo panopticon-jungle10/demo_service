@@ -17,13 +17,17 @@ interface Toast {
 }
 
 const PRODUCER_URL = process.env.NEXT_PUBLIC_PRODUCER_URL || 'http://localhost:3005';
-const TRACE_COUNT = 1000;
+const TRACE_COUNT = 100;
 
 export default function TrafficGeneratorModal({ onClose }: TrafficGeneratorModalProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
 
-  const addToast = (message: string, type: 'success' | 'error', trafficType?: 'normal' | 'error') => {
+  const addToast = (
+    message: string,
+    type: 'success' | 'error',
+    trafficType?: 'normal' | 'error',
+  ) => {
     const newToast: Toast = {
       id: Date.now().toString() + Math.random().toString(),
       message,
@@ -92,7 +96,8 @@ export default function TrafficGeneratorModal({ onClose }: TrafficGeneratorModal
 
           <div className="space-y-4">
             <p className="text-sm text-gray-600 mb-6">
-              버튼을 클릭하면 {TRACE_COUNT}건의 트레이스가 생성되어 Panopticon에서 실시간 트래픽을 확인할 수 있습니다.
+              버튼을 클릭하면 {TRACE_COUNT}건의 트레이스가 생성되어 Panopticon에서 실시간 트래픽을
+              확인할 수 있습니다.
             </p>
 
             {/* Normal Traffic Button */}
